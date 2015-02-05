@@ -12,5 +12,23 @@
 {{ forms.input('Password', 'password', '', 'password') }}
 {{ forms.submit('Login') }}
 </form>
+
+
+{% for sessiongroup,days in festival.sessions %}
+<h3>{{ sessiongroup }}</h3><table>
+ {% for day,times in days %}
+<tr><td>{{ day|date("F") }}</td>
+  {% for tag,period in times %}
+   {% if tag %}
+<td><label><input type="checkbox" id="{{ tag|a }}" name="{{ tag|a }}" />{{ period }}</label></td>
+   {% else %}
+<td></td>
+   {% endif %}
+  {% endfor %}
+</tr>
+ {% endfor %}
+</table>
+{% endfor %}
+
 {% endif %}
 {% endblock %}
