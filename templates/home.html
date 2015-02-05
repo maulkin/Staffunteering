@@ -7,7 +7,6 @@
 {% else %}
 <p>If you're a CAMRA member, please log in using your usual credentials below.
 {% if festival.nonmembers %}Otherwise you can <a href="nonmember.php">sign up as a non-member</a>.</p>{% endif %}
-<p>
 <form method="POST" action="member.php">
 {{ forms.input('Membership number', 'number') }}
 {{ forms.input('Password', 'password', '', 'password') }}
