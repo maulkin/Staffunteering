@@ -17,10 +17,10 @@
 {% for sessiongroup,days in festival.sessions %}
 <h3>{{ sessiongroup }}</h3><table>
  {% for day,times in days %}
-<tr><td>{{ day|date("F") }}</td>
+<tr><td>{{ day|date('l F j') }}</td>
   {% for tag,period in times %}
-   {% if tag %}
-<td><label><input type="checkbox" id="{{ tag|a }}" name="{{ tag|a }}" />{{ period }}</label></td>
+   {% if tag and period %}
+<td><label><input type="checkbox" id="{{ tag }}" name="{{ tag }}" />{{ period }}</label></td>
    {% else %}
 <td></td>
    {% endif %}
