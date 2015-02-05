@@ -1,7 +1,6 @@
 {% macro input(label, name, value, type, size) %}
-<label>{{ label|e }}
-<input type="{{ type|default('text') }}" name="{{ name }}" value="{{ value|e('html_attr') }}" {% if size|length > 0 %}size="{{ size }}"{% endif %}/>
-</label>
+<label for="{{ name }}">{{ label|e }}</label>
+<input type="{{ type|default('text') }}" id="{{ name }}" name="{{ name }}" value="{{ value|e('html_attr') }}" {% if size|length > 0 %}size="{{ size }}"{% endif %}/>
 {% endmacro %}
 
 {% macro submit(label="Submit") %}
