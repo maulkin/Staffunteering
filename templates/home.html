@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% import 'form.html' as forms %}
+{% block content %}
+<p>Welcome to the Cambridge Beer Festival volunteering site.</p>
+{% if not festival %}
+<p>We're not signing up volunteers for any upcoming festivals at the moment, but we probably will be soon.</p>
+{% else %}
+<p>If you're a CAMRA member, please log in using your usual credentials below.
+{% if festival.nonmembers %}Otherwise you can <a href="nonmember.php">sign up as a non-member</a>.</p>{% endif %}
+<p>
+<form method="POST" action="member.php">
+{{ forms.input('Membership number', 'number') }}
+{{ forms.input('Password', 'password', '', 'password') }}
+{{ forms.submit('Login') }}
+</form>
+{% endif %}
+{% endblock %}
