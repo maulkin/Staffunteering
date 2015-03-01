@@ -16,6 +16,24 @@ header h1 {
     padding: 0.5ex;
 }
 
+nav {
+	background-color: #106470;
+	color: #dddddd;
+	margin: 0;
+	padding: 1ex;
+	width: 100%;
+}
+
+nav a {
+	color: #dddddd;
+	text-decoration: underline;
+}
+
+nav a:hover {
+	color: #ffffdd;
+	text-decoration: none;
+}
+
 main {
 	margin: 0 1%;
 }

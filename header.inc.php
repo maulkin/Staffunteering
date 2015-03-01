@@ -15,3 +15,5 @@ $g_twig = new Twig_Environment(new Twig_Loader_Filesystem('templates'));
 require_once('person.inc.php');
 
 $g_person = Person::from_persist();
+
+$g_twig->addGlobal('person', $g_person);

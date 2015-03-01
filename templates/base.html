@@ -8,6 +8,13 @@
 <header>
 <h1>Cambridge Beer Festival Volunteering</h1>
 </header>
+{% if person %}
+<nav>
+Logged in as {{ person.name }}
+{% if person.membership %}<em>(CAMRA member {{ person.membership }})</em>{% endif %}
+ | <a href="logout.php" title="Logout">Logout</a>
+</nav>
+{% endif %}
 <main>
 {% block content %}
 {% endblock %}
