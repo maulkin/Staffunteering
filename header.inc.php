@@ -8,7 +8,6 @@ require_once('vendor/autoload.php');
 set_include_path('./include');
 
 require_once('server-config.inc.php');
-
-$g_db = new PDO (ServerConfig::DB_CONNECT_STRING, ServerConfig::DB_USER, ServerConfig::DB_PASSWD);
+require_once('db.inc.php');
 
 $g_twig = new Twig_Environment(new Twig_Loader_Filesystem('templates'));
