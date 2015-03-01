@@ -7,7 +7,7 @@ class Person extends Record {
 
 	public function is_member()
 	{
-		return $this->membership > 0;
+		return $this->data['membership'] > 0;
 	}
 
 	public function set_persist()
