@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% import 'form.html' as forms %}
+{% block content %}
+<p>If you're a CAMRA member, please log in using your usual credentials below.</p>
+{% if error_title %}<h2 class="error">{{ error_title|e }}</h2>{% endif %}
+{% if error_detail %}<p class="error">{{ error_detail|e }}</p>{% endif %}
+<form method="POST" action="">
+{{ forms.input('Membership number', 'number') }}
+{{ forms.input('Password', 'password', '', 'password') }}
+{{ forms.submit('Login') }}
+</form>
+{% endblock %}
