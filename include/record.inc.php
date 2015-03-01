@@ -46,9 +46,14 @@ class Record {
 		return count($this->dirty) > 0;
 	}
 
+	public function __isset($field)
+	{
+		return array_key_exists($field, $this->data);
+	}
+
 	public function __get($field)
 	{
-		return array_key_exists($field, $this->data) ? $this->data['field'] : NULL;
+		return array_key_exists($field, $this->data) ? $this->data[$field] : NULL;
 	}
 
 	public function __set($field, $value)
