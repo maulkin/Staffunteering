@@ -29,7 +29,7 @@ class Person extends Record {
 		if (!array_key_exists(ServerConfig::LOGIN_COOKIE_NAME, $_COOKIE))
 			return null;
 
-		$cookie = $_COOKIE(ServerConfig::LOGIN_COOKIE_NAME);
+		$cookie = $_COOKIE[ServerConfig::LOGIN_COOKIE_NAME];
 		if (strlen($cookie) != 91)
 			return null;
 
