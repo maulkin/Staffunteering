@@ -4,7 +4,7 @@ require_once('server-config.inc.php');
 
 function camra_authenticate ($membership_number, $password, &$error_code, &$debug=false)
 {
-	$url = 'https://api.camra.org.uk/index.php/api/auth/beerengine/format/json';
+	$url = 'https://api.camra.org.uk/index.php/api/branch/auth_4/format/json';
 
 	// create a CURL channel to call the authentication service
 	$ch = curl_init();
