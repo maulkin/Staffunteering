@@ -1,5 +1,7 @@
 body {
 	font-family: sans-serif;
+	background-color: white;
+	color: black;
 	margin: 0;
 }
 
@@ -39,6 +41,12 @@ main {
 	margin: 0 1%;
 }
 
+form {
+	background-color: #f8f8f8;
+	padding: 1ex;
+	margin: 0 1ex;
+}
+
 label {
 	display: block;
 	padding-top: 1ex;
@@ -52,3 +60,4 @@ input[type="submit"] {
 td label {
 	display: inline;
 }
+
