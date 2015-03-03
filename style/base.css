@@ -22,6 +22,7 @@ nav {
 	margin: 0;
 	padding: 1ex;
 	width: 100%;
+	border-top: solid #eeeeee 1px;
 }
 
 nav a {
