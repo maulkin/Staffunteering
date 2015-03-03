@@ -4,7 +4,7 @@ require_once('header.inc.php');
 require_once('auth.inc.php');
 require_once('person.inc.php');
 
-$target_url = ServerConfig::BASE_URL . 'member.php';
+$target_url = ServerConfig::BASE_URL . 'volunteer.php';
 
 if ($g_person && $g_person->is_member()) {
 	header("Location: " . $target_url, true, 302);

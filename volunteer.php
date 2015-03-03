@@ -11,4 +11,4 @@ if (!$g_person || !$g_person->is_member()) {
 require_once('festival.inc.php');
 $festival = Festival::current();
 
-echo $g_twig->render('member.html', array('festival'=>$festival));
+echo $g_twig->render('volunteer.html', array('festival'=>$festival));
