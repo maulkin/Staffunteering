@@ -17,3 +17,11 @@ require_once('person.inc.php');
 $g_person = Person::from_persist();
 
 $g_twig->addGlobal('person', $g_person);
+
+$g_twig->addFilter(new Twig_SimpleFilter('time_midnight',
+	function($d) {
+		$d = new DateTime($d);
+		$t = $d->format('G:i');
+		return ($t == '0:00') ? 'midnight' : $t;
+	}
+));

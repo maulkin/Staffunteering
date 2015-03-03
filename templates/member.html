@@ -2,21 +2,36 @@
 {% import 'form.html' as forms %}
 {% block content %}
 
+<p>Any help you can give us is warmly welcomed, whether it's a few hours or the whole festival. We're open to the public from {{ festival.open_start|date('l F j') }} until {{ festival.open_end|date('l F j') }}. For setting up and taking down we'll be looking for volunteers all the way from {{ festival.site_start|date('l F j') }} right through to {{ festival.site_end|date('l F j') }}.</p>
+
+<p>As a volunteer you get free food, some free beer and can buy more beer at a reduced price - whilst you're working.</p>
+
 <form method="POST" action="">
 
-<fieldset>
+{{ forms.textarea("Are there any particular jobs you'd like to do at the festival?", "jobs", "", 2, 80) }}
+{{ forms.textarea("Do you have any particular qualifications or experience that would be relevant?", "qual", "", 2, 80) }}
+
+<p>Please indicate the sessions you can work. If you can only work part of a session that's OK too.</p>
 {% for sessiongroup,days in festival.sessions %}
-<h3>{{ sessiongroup }}</h3>
+<fieldset>
+<legend>{{ sessiongroup }}</legend>
 <table>
 {% for day,sessions in days %}
 <tr><td>{{ day|date('l F j') }}</td>
 {% for session in sessions %}
-<td><label><input type="checkbox" id="{{ tag }}" name="{{ tag }}" />{{ session.start|date('G:i') }}&ndash;{{ session.end|date('G:i') }}</label></td>
+<td><label><input type="checkbox" id="{{ tag }}" name="{{ tag }}" />{{ session.start|time_midnight }}&ndash;{{ session.end|time_midnight }}</label></td>
 {% endfor %}
 </tr>
 {% endfor %}
 </table>
-{% endfor %}
 </fieldset>
+
+{% endfor %}
+<p>By submitting this form you are agreeing to abide by our staff guidelines at all times whilst on site. These will be available on site. Volunteers must be over the age of 18 - proof of age may be required at any session.</p>
+
+{{ forms.submit('Volunteer') }}
+</form>
+
+<p>If you have a medical condition that you feel the festival should know about, please get in touch with the <a href="mailto:volunteering@cambridgebeerfestival.com">festival volunteering officer, either by email</a> or in person at the festival. Any such details will of course be treated in the strictest confidence and shared only with festival medical personnel.</p>
 
 {% endblock %}

@@ -3,6 +3,11 @@
 <input type="{{ type|default('text') }}" id="{{ name }}" name="{{ name }}" value="{{ value|e('html_attr') }}" {% if size|length > 0 %}size="{{ size }}"{% endif %}/>
 {% endmacro %}
 
+{% macro textarea(label, name, value, rows, cols) %}
+<label for="{{ name }}">{{ label|e }}</label>
+<textarea rows="{{ rows|e('html_attr') }}" cols="{{ cols|e('html_attr') }}">{{ value|e }}</textarea>
+{% endmacro %}
+
 {% macro submit(label="Submit") %}
 <input type="submit" value="{{ label|e('html_attr') }} " />
 {% endmacro %}
