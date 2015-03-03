@@ -11,7 +11,7 @@
 {% else %}
 <p>
 If you're a CAMRA member, please log in using your usual credentials below.
-{% if festival.nonmembers %}Otherwise you can <a href="nonmember.php">sign up as a non-member</a>.{% endif %}
+{% if 'nonmembers' in festival.flags %}Otherwise you can <a href="nonmember.php">sign up as a non-member</a>.{% endif %}
 </p>
 <form method="POST" action="memberlogin.php">
 {{ forms.input('Membership number', 'number') }}
@@ -20,7 +20,7 @@ If you're a CAMRA member, please log in using your usual credentials below.
 </form>
 {% endif %}
 
-<p>In order to run the festival we need to store your name and some basic contact details. We'll also store everything you enter on the form. If we need more of your contact details we obtain that from central CAMRA records. After the festival we'll store minimal information for 1 year, so we can tell if you're a new volunteer at next year's volunteer.</p>
+<p>In order to run the festival we need to store your name and some basic contact details. We'll also store everything you enter on the form. If we need more of your contact details we obtain that from central CAMRA records. After the festival we'll store minimal information for 1 year, so we can tell if you're a new volunteer at next year's festival.</p>
 
 <p>If you'd like more information about data the beer festival holds on you please get in touch with the <a href="mailto:volunteering@cambridgebeerfestival.com">festival volunteering officer</a>.</p>
 
