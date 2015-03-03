@@ -3,12 +3,18 @@
 require_once('header.inc.php');
 require_once('auth.inc.php');
 
-if (!$g_person || !$g_person->is_member()) {
+require_once('festival.inc.php');
+$festival = Festival::current();
+
+if (!$festival) {
+	/* No current festival */
 	header("Location: " . ServerConfig::BASE_URL, true, 302);
 	exit(1);
 }
 
-require_once('festival.inc.php');
-$festival = Festival::current();
+if (!in_array('nonmember', $festival->flags) && (!$g_person || !$g_person->is_member())) {
+	header("Location: " . ServerConfig::BASE_URL, true, 302);
+	exit(1);
+}
 
 echo $g_twig->render('volunteer.html', array('festival'=>$festival));

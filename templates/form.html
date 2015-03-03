@@ -5,7 +5,7 @@
 
 {% macro textarea(label, name, value, rows, cols) %}
 <label for="{{ name }}">{{ label|e }}</label>
-<textarea rows="{{ rows|e('html_attr') }}" cols="{{ cols|e('html_attr') }}">{{ value|e }}</textarea>
+<textarea rows="{{ rows|default(4) }}" cols="{{ cols|default(80) }}">{{ value|e }}</textarea>
 {% endmacro %}
 
 {% macro submit(label="Submit") %}

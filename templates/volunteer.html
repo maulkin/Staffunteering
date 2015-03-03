@@ -6,7 +6,21 @@
 
 <p>As a volunteer you get free food, some free beer and can buy more beer at a reduced price - whilst you're working.</p>
 
+{% if not person or not person.is_member() %}
+<p>If you're a CAMRA member, please <a href="memberlogin.php" title="Member login">login</a> before completing this form.</p>
+{% endif %}
+
 <form method="POST" action="">
+{% if not person or not person.is_member() %}
+<fieldset>
+<legend>Contact information</legend>
+{{ forms.input('Name', 'name', '') }}
+{{ forms.input('Email', 'email', '', 'email') }}
+{{ forms.textarea('Address', 'address') }}
+</fieldset>
+{% endif %}
+
+{{ forms.input('What name would you like on your badge?', 'name', person ? person.name : '') }}
 
 {{ forms.textarea("Are there any particular jobs you'd like to do at the festival?", "jobs", "", 2, 80) }}
 {{ forms.textarea("Do you have any particular qualifications or experience that would be relevant?", "qual", "", 2, 80) }}
