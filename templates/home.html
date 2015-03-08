@@ -7,11 +7,15 @@
 {% else %}
 <p>Like all <abbr title="Campaign for Real Ale">CAMRA</abbr> beer festivals, the {{ festival.name }} is organised and run entirely by volunteers. Without those volunteers it simply wouldn't happen.</p>
 {% if person %}
-
+{% if festival.nonmembers or person.is_member() %}
+<p><a href="volunteer.php" title="Volunteer">Sign up</a></p>
+{% else %}
+<p>We're not currently signing up volunteers who aren't members of CAMRA for this festival.</p>
+{% endif %}
 {% else %}
 <p>
 If you're a CAMRA member, please log in using your usual credentials below.
-{% if 'nonmembers' in festival.flags %}Otherwise you can <a href="nonmember.php">sign up as a non-member</a>.{% endif %}
+{% if festival.nonmembers %}Otherwise you can <a href="volunteer.php">sign up as a non-member</a>.{% endif %}
 </p>
 <form method="POST" action="memberlogin.php">
 {{ forms.input('Membership number', 'number') }}

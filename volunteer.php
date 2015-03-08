@@ -12,7 +12,7 @@ if (!$festival) {
 	exit(1);
 }
 
-if (!in_array('nonmember', $festival->flags) && (!$g_person || !$g_person->is_member())) {
+if (!$festival->nonmembers && (!$g_person || !$g_person->is_member())) {
 	header("Location: " . ServerConfig::BASE_URL, true, 302);
 	exit(1);
 }
