@@ -9,9 +9,9 @@ class Festival extends Record {
 	{
 		parent::__construct($id);
 		if ($this->data) {
-			$sth = db_prepare("SELECT flagname FROM festival_flag INNER JOIN flag ON festival_flag.flag=flag.id WHERE festival_flag.festival=?");
+			$sth = db_prepare("SELECT flagname,description,comment FROM festival_flag INNER JOIN flag ON festival_flag.flag=flag.id WHERE festival_flag.festival=?");
 			$sth->execute(array($id));
-			$this->data['flags'] = $sth->fetchAll(PDO::FETCH_COLUMN, 0);
+			$this->data['flags'] = array_map('reset', $sth->fetchAll(PDO::FETCH_GROUP | PDO::FETCH_ASSOC));
 
 			$this->data['sessions'] = [
 				'setup' => [],

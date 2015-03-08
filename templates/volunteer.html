@@ -39,8 +39,19 @@
 {% endfor %}
 </table>
 </fieldset>
-
 {% endfor %}
+
+{% if festival.flags|length %}
+<fieldset>
+<legend>Extra information</legend>
+{% for flagname,flagdata in festival.flags %}
+<label><input type="checkbox" id="flag_{{ flagname }}" name="flag_{{ flagname }}" />{{ flagdata.description }}
+{% if flagdata.comment|length %}<em>{{ flagdata.comment }}</em>{% endif %}
+</label>
+{% endfor %}
+</fieldset>
+{% endif %}
+
 <p>By submitting this form you are agreeing to abide by our staff guidelines at all times whilst on site. These will be available on site. Volunteers must be over the age of 18 - proof of age may be required at any session.</p>
 
 {{ forms.submit('Volunteer') }}
