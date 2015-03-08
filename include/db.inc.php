@@ -1,6 +1,9 @@
 <?php
 
 $g_db = new PDO (ServerConfig::DB_CONNECT_STRING, ServerConfig::DB_USER, ServerConfig::DB_PASSWD);
+$g_db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING);
+
+$transaction_depth = 0;
 
 function db_prepare($query)
 {
@@ -10,14 +13,18 @@ function db_prepare($query)
 
 function db_begin()
 {
-	global $g_db;
-	$g_db->beginTransaction();
+	global $g_db, $transaction_depth;
+
+	if ($transaction_depth++ == 0)
+		$g_db->beginTransaction();
 }
 
 function db_commit()
 {
-	global $g_db;
-	$g_db->commit();
+	global $g_db, $transaction_depth;
+
+	if (--$transaction_depth == 0)
+		$g_db->commit();
 }
 
 function db_rollback()
