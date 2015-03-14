@@ -55,8 +55,6 @@ if (($_SERVER['REQUEST_METHOD'] == 'POST')) {
 	}
 
 	$g_person->badgename = isset($_POST['badgename']) ? $_POST['badgename'] : '';
-	$jobs = isset($_POST['jobs']) ? $_POST['jobs'] : '';
-	$qual = isset($_POST['qual']) ? $_POST['qual'] : '';
 
 	$pf->clear_sessions();
 	foreach ($festival->sessions as $session_group) {
@@ -75,6 +73,9 @@ if (($_SERVER['REQUEST_METHOD'] == 'POST')) {
 			$pf->add_flag($flag['id']);
 		}
 	}
+
+	$pf->jobprefs = isset($_POST['jobprefs']) ? $_POST['jobprefs'] : '';
+	$pf->quals = isset($_POST['quals']) ? $_POST['quals'] : '';
 }
 
 if (!$invalid) {

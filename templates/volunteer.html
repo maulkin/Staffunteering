@@ -22,9 +22,6 @@
 
 {{ forms.input('What name would you like on your badge?', 'badgename', person ? (person.badgename|length ? person.badgename : person.name) : '') }}
 
-{{ forms.textarea("Are there any particular jobs you'd like to do at the festival?", "jobs", "", 2, 80) }}
-{{ forms.textarea("Do you have any particular qualifications or experience that would be relevant?", "qual", "", 2, 80) }}
-
 <p>Please indicate the sessions you can work. If you can only work part of a session that's OK too.</p>
 {% for sessiongroup,days in festival.sessions %}
 <fieldset>
@@ -51,6 +48,10 @@
 {% if flagdata.comment|length %}<em>{{ flagdata.comment }}</em>{% endif %}
 </label>
 {% endfor %}
+
+{{ forms.textarea("Are there any particular jobs you'd like to do at the festival?", "jobprefs", pf.jobprefs, 2, 80) }}
+{{ forms.textarea("Do you have any particular qualifications or experience that would be relevant?", "quals", pf.quals, 2, 80) }}
+
 </fieldset>
 {% endif %}
 
