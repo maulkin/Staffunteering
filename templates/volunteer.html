@@ -46,8 +46,8 @@
 {% if festival.flags|length %}
 <fieldset>
 <legend>Extra information</legend>
-{% for flagname,flagdata in festival.flags %}
-<label><input type="checkbox" id="flag_{{ flagname }}" name="flag_{{ flagname }}" />{{ flagdata.description }}
+{% for flagdata in festival.flags %}
+<label><input type="checkbox" id="flag_{{ flagdata.id }}" name="flag_{{ flagdata.id }}" {% if flagdata.id in pf.flags %}checked {% endif %}/>{{ flagdata.description }}
 {% if flagdata.comment|length %}<em>{{ flagdata.comment }}</em>{% endif %}
 </label>
 {% endfor %}

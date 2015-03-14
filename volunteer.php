@@ -58,6 +58,7 @@ if (($_SERVER['REQUEST_METHOD'] == 'POST')) {
 	$jobs = isset($_POST['jobs']) ? $_POST['jobs'] : '';
 	$qual = isset($_POST['qual']) ? $_POST['qual'] : '';
 
+	$pf->clear_sessions();
 	foreach ($festival->sessions as $session_group) {
 		foreach ($session_group as $day) {
 			foreach ($day as $sess) {
@@ -67,12 +68,21 @@ if (($_SERVER['REQUEST_METHOD'] == 'POST')) {
 			}
 		}
 	}
+
+	$pf->clear_flags();
+	foreach ($festival->flags as $flag) {
+		if (isset($_POST['flag_' . $flag['id']])) {
+			$pf->add_flag($flag['id']);
+		}
+	}
 }
 
-db_begin();
-$pf->save();
-$g_person->save();
-db_commit();
+if (!$invalid) {
+	db_begin();
+	$pf->save();
+	$g_person->save();
+	db_commit();
+}
 
 if ($present_form) {
 	echo $g_twig->render('volunteer.html', array('festival'=>$festival, 'pf'=>$pf));
