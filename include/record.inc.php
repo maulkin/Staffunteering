@@ -11,7 +11,11 @@ class Record {
 			$sth = db_prepare("SELECT * FROM " . static::TABLE . " WHERE id=?");
 			$sth->execute(array($id));
 			$this->data = $sth->fetch(PDO::FETCH_ASSOC);
-			$this->id = $id;
+			if ($this->data) {
+				$this->id = $id;
+			}
+		} else {
+			$this->data = array();
 		}
 		$this->dirty = array();
 	}
@@ -41,6 +45,11 @@ class Record {
 		return false;
 	}
 
+	public function is_valid()
+	{
+		return $this->id > 0;
+	}
+
 	public function is_dirty()
 	{
 		return count($this->dirty) > 0;
@@ -58,10 +67,10 @@ class Record {
 
 	public function __set($field, $value)
 	{
-		if (($field == 'id') || (!array_key_exists($field, $this->data)))
+		if ($field == 'id')
 			return;
 
-		if ($value != $this->data[$field]) {
+		if (!array_key_exists($field, $this->data) || ($value != $this->data[$field])) {
 			$this->data[$field] = $value;
 			$this->dirty[$field] = $value;
 		}

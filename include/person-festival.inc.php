@@ -66,7 +66,6 @@ class PersonFestival extends Record {
 				$sth->execute(array($this->person->id, $this->festival->id, $flag));
 			}
 
-			trigger_error("Saving job prefs " . $this->data['jobprefs'], E_USER_NOTICE);
 			$sth = db_prepare("UPDATE person_festival SET jobprefs=?, quals=? WHERE person=? AND festival=?");
 			$sth->execute(array($this->data['jobprefs'], $this->data['quals'], $this->person->id, $this->festival->id));
 

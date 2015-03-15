@@ -2,8 +2,12 @@
 
 require_once('header.inc.php');
 
-require_once('festival.inc.php');
+if (!$g_person) {
+	header("Location: " . ServerConfig::BASE_URL, true, 302);
+	exit(1);
+}
 
+require_once('festival.inc.php');
 $festival = Festival::current();
 
 if (!$festival) {
@@ -12,14 +16,14 @@ if (!$festival) {
 	exit(1);
 }
 
-$is_member = $g_person ? $g_person->is_member() : false;
+$is_member = $g_person->is_member();
 
 if (!$festival->nonmembers && !$is_member) {
 	header("Location: " . ServerConfig::BASE_URL, true, 302);
 	exit(1);
 }
 
-$present_form = true;
+$submitted = false;
 $invalid = false;
 $form_errors = array();
 
@@ -29,30 +33,9 @@ require_once('person-festival.inc.php');
 $pf = new PersonFestival($g_person, $festival);
 
 if (($_SERVER['REQUEST_METHOD'] == 'POST')) {
+	$submitted = true;
+
 	/* Validate all form fields. */
-	if (!$is_member) {
-		if (isset($_POST['name']) && preg_match("/\S+/", $_POST['name'])) {
-			$name = $_POST['name'];
-		} else {
-			$invalid = true;
-			$form_errors['name'] = "Name is required";
-		}
-
-		if (isset($_POST['email']) && preg_match("/^\S+@\S+$/", $_POST['email'])) {
-			$email = $_POST['email'];
-		} else {
-			$invalid = true;
-			$form_errors['email'] = "Email is required";
-		}
-
-		if (isset($_POST['address']) && preg_match("/^\S+@\S+$/", $_POST['address'])) {
-			$address = $_POST['address'];
-		} else {
-			$invalid = true;
-			$form_errors['address'] = "Address is required";
-		}
-	}
-
 	$g_person->badgename = isset($_POST['badgename']) ? $_POST['badgename'] : '';
 
 	$pf->clear_sessions();
@@ -77,13 +60,12 @@ if (($_SERVER['REQUEST_METHOD'] == 'POST')) {
 	$pf->quals = isset($_POST['quals']) ? $_POST['quals'] : '';
 }
 
-if (!$invalid) {
+if ($submitted && !$invalid) {
 	db_begin();
 	$pf->save();
 	$g_person->save();
 	db_commit();
-}
-
-if ($present_form) {
+	echo $g_twig->render('thanks.html', array('festival'=>$festival));
+} else {
 	echo $g_twig->render('volunteer.html', array('festival'=>$festival, 'pf'=>$pf));
 }

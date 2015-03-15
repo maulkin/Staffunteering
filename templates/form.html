@@ -1,13 +1,27 @@
-{% macro input(label, name, value, type, size) %}
+{% macro input(label, name, value, type, size, errortext="") %}
 <label for="{{ name }}">{{ label|e }}</label>
-<input type="{{ type|default('text') }}" id="{{ name }}" name="{{ name }}" value="{{ value|e('html_attr') }}" {% if size|length > 0 %}size="{{ size }}"{% endif %}/>
+{% if errortext|length > 0 %}<span class="error">{{ errortext|e }}</span>{% endif %}
+<input type="{{ type|default('text') }}" id="{{ name }}" name="{{ name }}" value="{{ value|e('html_attr') }}" {% if size|length > 0 %}size="{{ size }}" {% endif %}/>
 {% endmacro %}
 
-{% macro textarea(label, name, value, rows, cols) %}
+{% macro textarea(label, name, value, rows, cols, errortext="") %}
 <label for="{{ name }}">{{ label|e }}</label>
+{% if errortext|length > 0 %}<span class="error">{{ errortext|e }}</span>{% endif %}
 <textarea id="{{ name }}" name="{{ name }}" rows="{{ rows|default(4) }}" cols="{{ cols|default(80) }}">{{ value|e }}</textarea>
 {% endmacro %}
 
 {% macro submit(label="Submit") %}
 <input type="submit" value="{{ label|e('html_attr') }} " />
+{% endmacro %}
+
+{% macro newpassword(label, name, errortext="") %}
+<label for="{{ name }}">{{ label|e }}</label>
+{% if errortext|length > 0 %}<span class="error">{{ errortext|e }}</span>{% endif %}
+<input type="password" id="{{ name }}" name="{{ name }}" class="password" size="32" />
+<label for="{{ name }}_c">{{ label|e }} - confirmation</label>
+<input type="password" id="{{ name }}_c" name="{{ name }}_c" size="32" />
+{% endmacro %}
+
+{% macro hidden(name, value) %}
+<input type="hidden" name="{{ name }}" value="{{ value }}"/>
 {% endmacro %}

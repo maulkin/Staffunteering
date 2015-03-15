@@ -11,6 +11,12 @@ function db_prepare($query)
 	return $g_db->prepare($query);
 }
 
+function db_query($query)
+{
+	global $g_db;
+	return $g_db->query($query);
+}
+
 function db_begin()
 {
 	global $g_db, $transaction_depth;

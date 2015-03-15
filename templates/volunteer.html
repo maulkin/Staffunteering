@@ -11,15 +11,6 @@
 {% endif %}
 
 <form method="POST" action="">
-{% if not person or not person.is_member() %}
-<fieldset>
-<legend>Contact information</legend>
-{{ forms.input('Name', 'name', '') }}
-{{ forms.input('Email', 'email', '', 'email') }}
-{{ forms.textarea('Address', 'address') }}
-</fieldset>
-{% endif %}
-
 {{ forms.input('What name would you like on your badge?', 'badgename', person ? (person.badgename|length ? person.badgename : person.name) : '') }}
 
 <p>Please indicate the sessions you can work. If you can only work part of a session that's OK too.</p>

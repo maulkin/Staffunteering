@@ -1,13 +1,14 @@
 <?php
 
 require_once('record.inc.php');
+require_once('local_auth.inc.php');
 
 class Person extends Record {
 	const TABLE = 'person';
 
 	public function is_member()
 	{
-		return $this->data['membership'] > 0;
+		return array_key_exists('membership', $this->data) && ($this->data['membership'] > 0);
 	}
 
 	public function set_persist()
@@ -17,6 +18,15 @@ class Person extends Record {
 		$mac = hash_hmac('sha256', $data, ServerConfig::LOGIN_COOKIE_MAC_KEY);
 
 		setcookie(ServerConfig::LOGIN_COOKIE_NAME, $data . '.' . $mac, $expiration, ServerConfig::BASE_URL);
+	}
+
+	public function set_password($pw)
+	{
+		if ($this->is_member()) {
+			return false;
+		}
+		$this->__set('pwhash', local_gethash($pw));
+		return true;
 	}
 
 	public static function remove_persist()

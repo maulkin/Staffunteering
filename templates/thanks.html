@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+{% block content %}
+{% if festival %}
+<p>Thanks for volunteering for {{ festival.name }}. If you want to change any of the information you've provided, simply come back to this site.</p>
+{% else %}
+<p>Thanks for volunteering.</p>
+{% endif %}
+{% endblock %}

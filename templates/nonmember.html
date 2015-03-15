@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% import 'form.html' as forms %}
+{% block content %}
+<p>If you're a CAMRA member, please <a href="memberlogin.php" title="CAMRA log in">log in as a member</a>.</p>
+<p>If you've volunteered before as a non-member, please log in using your email address and password you used before. Otherwise, you can sign up as a new volunteer below.</p>
+
+<h2>Existing volunteer</h2>
+{% if error_detail %}<p class="error">{{ error_detail|e }}</p>{% endif %}
+<form method="POST" action="">
+{{ forms.input('Email address', 'email', '', 'email', 60) }}
+{{ forms.input('Password', 'password', '', 'password') }}
+{{ forms.submit('Login') }}
+</form>
+
+<h2>New volunteer</h2>
+<form method="POST" action="">
+{{ forms.input('Name', 'name', newform.name, text, 60, newform.name_err) }}
+{{ forms.input('Email address', 'email', newform.email, 'email', 60, newform.email_err) }}
+{{ forms.textarea('Address', 'address', newform.address, 4, 80, newform.address_err) }}
+{{ forms.newpassword('Password', 'password', newform.password_err) }}
+{{ forms.hidden('newvolunteer', '1') }}
+{{ forms.submit('Register') }}
+</form>
+
+{% endblock %}
