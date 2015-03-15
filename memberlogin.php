@@ -1,7 +1,7 @@
 <?php
 
 require_once('header.inc.php');
-require_once('auth.inc.php');
+require_once('camra_auth.inc.php');
 require_once('person.inc.php');
 
 $target_url = ServerConfig::BASE_URL . 'volunteer.php';
