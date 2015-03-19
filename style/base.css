@@ -70,3 +70,7 @@ span.error {
 	font-size: small;
 	display: block;
 }
+
+#sessions {
+	padding: 2ex 0;
+}
