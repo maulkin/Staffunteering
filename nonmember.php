@@ -36,8 +36,6 @@ if (($_SERVER['REQUEST_METHOD'] == 'POST') && isset($_POST['newvolunteer'])) {
 		$person->address = trim($_POST['address']);
 	}
 
-	print_r($person);
-
 	/* Now validate. */
 	if (!strlen($person->name)) {
 		$newform['name_err'] = "A name is required";
@@ -64,10 +62,24 @@ if (($_SERVER['REQUEST_METHOD'] == 'POST') && isset($_POST['newvolunteer'])) {
 	}
 
 	if (!$invalid) {
+		/* Is this email already in use? */
+		$sth = db_prepare("SELECT COUNT(*) FROM person WHERE email=?");
+		$sth->execute(array($person->email));
+		if ($sth->fetchColumn() > 0) {
+			$newform['email_err'] = "That email address is already in use on the system";
+			$invalid = true;
+		}
+	}
+
+	if (!$invalid) {
 		$present_form = false;
 		$person->set_password($_POST['password']);
-		$person->save();
-		$person->set_persist();
+		if ($person->save()) {
+			$person->set_persist();
+		} else {
+			/* This is *probably* a duplicate that we raced with. */
+			$newform['overall_err'] = "Failed to create volunteer";
+		}
 	}
 } elseif (($_SERVER['REQUEST_METHOD'] == 'POST') && isset($_POST['email']) && isset($_POST['password'])) {
 	/* Login attempt. */
