@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% import 'form.html' as forms %}
+{% set sessiongrouptitles={'setup':'Set up','open':'Open','takedown':'Take down'} %}
 {% block content %}
 
 <p>Any help you can give us is warmly welcomed, whether it's a few hours or the whole festival. We're open to the public from {{ festival.open_start|date('l F j') }} until {{ festival.open_end|date('l F j') }}. For setting up and taking down we'll be looking for volunteers all the way from {{ festival.site_start|date('l F j') }} right through to {{ festival.site_end|date('l F j') }}.</p>
@@ -16,7 +17,7 @@
 <p>Please indicate the sessions you can work. If you can only work part of a session that's OK too.</p>
 {% for sessiongroup,days in festival.sessions %}
 <fieldset>
-<legend>{{ sessiongroup }}</legend>
+<legend>{% if sessiongroup in sessiongrouptitles|keys %}{{ sessiongrouptitles[sessiongroup]}}{% else %} {{ sessiongroup }}{% endif %}</legend>
 <table>
 {% for day,sessions in days %}
 <tr><td>{{ day|date('l F j') }}</td>
