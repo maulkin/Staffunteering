@@ -13,19 +13,14 @@ require_once('db.inc.php');
 $g_twig = new Twig_Environment(new Twig_Loader_Filesystem('templates'));
 
 require_once('person.inc.php');
+require_once('festival.inc.php');
 
 $g_person = Person::from_persist();
+$g_festival = Festival::current();
 
 $g_twig->addGlobal('person', $g_person);
+$g_twig->addGlobal('festival', $g_festival);
 
 if (ServerConfig::SERVER_NAME) {
 	$g_twig->addGlobal('baseurl', ServerConfig::SERVER_NAME . ServerConfig::BASE_URL);
 }
-
-$g_twig->addFilter(new Twig_SimpleFilter('time_midnight',
-	function($d) {
-		$d = new DateTime($d);
-		$t = $d->format('G:i');
-		return ($t == '0:00') ? 'midnight' : $t;
-	}
-));
