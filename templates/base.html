@@ -2,6 +2,7 @@
 <html>
 <head>
 <title>{% if title %}{{ title|e }} - {% endif %}Cambridge Beer Festival Volunteering</title>
+{% if baseurl %}<base href="{{ baseurl|e('html_attr') }}" />{% endif %}
 <link rel="stylesheet" href="style/base.css" />
 </head>
 <body>

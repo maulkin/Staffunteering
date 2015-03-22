@@ -18,6 +18,10 @@ $g_person = Person::from_persist();
 
 $g_twig->addGlobal('person', $g_person);
 
+if (ServerConfig::SERVER_NAME) {
+	$g_twig->addGlobal('baseurl', ServerConfig::SERVER_NAME . ServerConfig::BASE_URL);
+}
+
 $g_twig->addFilter(new Twig_SimpleFilter('time_midnight',
 	function($d) {
 		$d = new DateTime($d);
