@@ -1,6 +1,38 @@
 {% extends 'base.html' %}
 {% import 'form.html' as forms %}
 {% set sessiongrouptitles={'setup':'Set up','open':'Open','takedown':'Take down'} %}
+{% block head %}
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script>
+$(function() {
+	$("#sessions > fieldset").each(function() {
+		var sessions = $(this).find("input.session");
+		var session_count = sessions.length;
+		var checked_count = sessions.filter(":checked").length;
+		var select_all = $("<input type=\"checkbox\" title=\"Select all\"/>");
+		var block_from_all = false;
+
+		select_all.prop("checked", checked_count == session_count);
+		$(this).find("legend").append(select_all);
+
+		$(this).on("change", "input.session", function() {
+			if (block_from_all)
+				return;
+			var checked_count = sessions.filter(":checked").length;
+			select_all.prop("checked", checked_count == session_count);
+		});
+
+		select_all.on("change", function() {
+			var all = $(this).prop("checked");
+			block_from_all = true;
+			sessions.prop("checked", all);
+			$(this).prop("title", all ? "Clear all" : "Select all");
+			block_from_all = false;
+		});
+	});
+});
+</script>
+{% endblock %}
 {% block content %}
 
 <p>Any help you can give us is warmly welcomed, whether it's a few hours or the whole festival. We're open to the public from {{ festival.open_start|date('l F j') }} until {{ festival.open_end|date('l F j') }}. For setting up and taking down we'll be looking for volunteers all the way from {{ festival.site_start|date('l F j') }} right through to {{ festival.site_end|date('l F j') }}.</p>
@@ -24,7 +56,7 @@
 {% for day,sessions in days %}
 <tr><td>{{ day|date('l F j') }}</td>
 {% for session in sessions %}
-<td><label><input type="checkbox" id="{{ session.tag }}" name="{{ session.tag }}" {% if session.id in pf.sessions %}checked {% endif %}/>
+<td><label><input type="checkbox" class="session" id="{{ session.tag }}" name="{{ session.tag }}" {% if session.id in pf.sessions %}checked {% endif %}/>
 {{ session.start|time_midnight }}&ndash;{{ session.end|time_midnight }}
 </label></td>
 {% endfor %}
