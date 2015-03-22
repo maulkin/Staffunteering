@@ -15,9 +15,9 @@
 <h2>New volunteer</h2>
 {% if newform.overall_err|length %}<p class="error">{{ newform.overall_err|e }}</p>{% endif %}
 <form method="POST" action="">
-{{ forms.input('Name', 'name', newform.name, text, 60, newform.name_err) }}
-{{ forms.input('Email address', 'email', newform.email, 'email', 60, newform.email_err) }}
-{{ forms.textarea('Address', 'address', newform.address, 4, 80, newform.address_err) }}
+{{ forms.input('Name', 'name', newform.name, text, 60, newform.name_err, true) }}
+{{ forms.input('Email address', 'email', newform.email, 'email', 60, newform.email_err, true) }}
+{{ forms.textarea('Address', 'address', newform.address, 4, 80, newform.address_err, true) }}
 {{ forms.newpassword('Password', 'password', newform.password_err) }}
 {{ forms.hidden('newvolunteer', '1') }}
 {{ forms.submit('Register') }}

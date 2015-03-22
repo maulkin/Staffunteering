@@ -57,6 +57,11 @@ input[type="submit"] {
 	margin: 2ex 0;
 }
 
+label.required:after {
+	content: " *";
+	color: #69b31a;
+}
+
 td label {
 	display: inline;
 }
