@@ -54,8 +54,8 @@ if (($_SERVER['REQUEST_METHOD'] == 'POST') && isset($_POST['newvolunteer'])) {
 		if ($_POST['password'] != $_POST['password_c']) {
 			$newform['password_err'] = "Passwords do not match";
 			$invalid = true;
-		} elseif (strlen($_POST['password']) < 6) {
-			$newform['password_err'] = "Password must be at least 6 characters";
+		} elseif (!preg_match("/^\S{6,}$/", $_POST['password'])) {
+			$newform['password_err'] = "Password must be at least six characters";
 			$invalid = true;
 		}
 	} else {
@@ -82,9 +82,9 @@ if (($_SERVER['REQUEST_METHOD'] == 'POST') && isset($_POST['newvolunteer'])) {
 			$newform['overall_err'] = "Failed to create volunteer";
 		}
 	}
-} elseif (($_SERVER['REQUEST_METHOD'] == 'POST') && isset($_POST['email']) && isset($_POST['password'])) {
+} elseif (($_SERVER['REQUEST_METHOD'] == 'POST') && isset($_POST['login_email']) && isset($_POST['login_password'])) {
 	/* Login attempt. */
-	$person_id = local_authenticate($_POST['email'], $_POST['password']);
+	$person_id = local_authenticate($_POST['login_email'], $_POST['login_password']);
 
 	$error_detail = "Invalid email address or password";
 

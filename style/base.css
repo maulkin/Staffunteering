@@ -62,6 +62,11 @@ label.required:after {
 	color: #69b31a;
 }
 
+.password-tip {
+	font-size: small;
+	color: #333333;
+}
+
 td label {
 	display: inline;
 }

@@ -1,13 +1,13 @@
 {% macro input(label, name, value, type, size, errortext, required) %}
 <label {% if required %}class="required" {% endif %}for="{{ name }}">{{ label|e }}</label>
 {% if errortext|length > 0 %}<span class="error">{{ errortext|e }}</span>{% endif %}
-<input {% if required %}class="required" {% endif %}type="{{ type|default('text') }}" id="{{ name }}" name="{{ name }}" value="{{ value|e('html_attr') }}" {% if size|length > 0 %}size="{{ size }}" {% endif %}/>
+<input {% if required %}required {% endif %}type="{{ type|default('text') }}" id="{{ name }}" name="{{ name }}" value="{{ value|e('html_attr') }}" {% if size|length > 0 %}size="{{ size }}" {% endif %}/>
 {% endmacro %}
 
 {% macro textarea(label, name, value, rows, cols, errortext, required) %}
 <label {% if required %}class="required" {% endif %}for="{{ name }}">{{ label|e }}</label>
 {% if errortext|length > 0 %}<span class="error">{{ errortext|e }}</span>{% endif %}
-<textarea {% if required %}class="required" {% endif %}id="{{ name }}" name="{{ name }}" rows="{{ rows|default(4) }}" cols="{{ cols|default(80) }}">{{ value|e }}</textarea>
+<textarea {% if required %}required {% endif %}id="{{ name }}" name="{{ name }}" rows="{{ rows|default(4) }}" cols="{{ cols|default(80) }}">{{ value|e }}</textarea>
 {% endmacro %}
 
 {% macro submit(label="Submit") %}
@@ -15,11 +15,11 @@
 {% endmacro %}
 
 {% macro newpassword(label, name, errortext) %}
-<label class="required" for="{{ name }}">{{ label|e }}</label>
+<label class="required" for="{{ name }}">{{ label|e }}<span class="password-tip"> (must contain at least six characters)</span></label>
 {% if errortext|length > 0 %}<span class="error">{{ errortext|e }}</span>{% endif %}
-<input type="password" id="{{ name }}" name="{{ name }}" class="password" size="32" />
+<input required pattern="^\S{6,}$" title="The password must be at least six characters" type="password" id="{{ name }}" name="{{ name }}" size="32" />
 <label class="required" for="{{ name }}_c">{{ label|e }} - confirmation</label>
-<input type="password" id="{{ name }}_c" name="{{ name }}_c" size="32" />
+<input required pattern="^\S{6,}$" title="The password must be at least six characters and must match" type="password" id="{{ name }}_c" name="{{ name }}_c" size="32" />
 {% endmacro %}
 
 {% macro hidden(name, value) %}
