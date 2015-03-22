@@ -56,6 +56,7 @@ if (($_SERVER['REQUEST_METHOD'] == 'POST') && isset($_POST['newvolunteer'])) {
 			$invalid = true;
 		} elseif (strlen($_POST['password']) < 6) {
 			$newform['password_err'] = "Password must be at least 6 characters";
+			$invalid = true;
 		}
 	} else {
 		$newform['password_err'] = "A password is required";
