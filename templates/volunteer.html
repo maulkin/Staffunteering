@@ -35,9 +35,9 @@ $(function() {
 {% endblock %}
 {% block content %}
 
-<p>Any help you can give us is warmly welcomed, whether it's a few hours or the whole festival. We're open to the public from {{ festival.open_start|date('l F j') }} until {{ festival.open_end|date('l F j') }}. For setting up and taking down we'll be looking for volunteers all the way from {{ festival.site_start|date('l F j') }} right through to {{ festival.site_end|date('l F j') }}.</p>
+<p>Any help you can give us is warmly welcomed, whether it's a few hours or the whole festival. We're open to the public from {{ festival.open_start|date('l j F') }} until {{ festival.open_end|date('l j F') }}. For setting up and taking down we'll be looking for volunteers all the way from {{ festival.site_start|date('l j F') }} right through to {{ festival.site_end|date('l j F') }}.</p>
 
-<p>As a volunteer you get free food, some free beer and can buy more beer at a reduced price - whilst you're working.</p>
+<p>As a volunteer you get free food, some free beer and can buy more beer at a reduced price - while you're working.</p>
 
 {% if not person or not person.is_member() %}
 <p>If you're a CAMRA member, please <a href="memberlogin.php" title="Member login">login</a> before completing this form.</p>
@@ -47,14 +47,14 @@ $(function() {
 {{ forms.input('What name would you like on your badge?', 'badgename', person ? (person.badgename|length ? person.badgename : person.name) : '') }}
 
 <div id="sessions">
-<p>Please indicate the sessions you can work. If you can only work part of a session that's OK too.</p>
+<p>Please indicate the sessions you can work. If you can only work part of a session that's OK too - for example, if you can't be there at the start or need to leave early.</p>
 <p>For your own safety, please wear stout footwear - no open toed sandals or flip flops. For set up and take down please bring safety footwear if you have it - if you don't have it, we can provide it.</p>
 {% for sessiongroup,days in festival.sessions %}
 <fieldset>
 <legend>{% if sessiongroup in sessiongrouptitles|keys %}{{ sessiongrouptitles[sessiongroup]}}{% else %} {{ sessiongroup }}{% endif %}</legend>
 <table>
 {% for day,sessions in days %}
-<tr><td>{{ day|date('l F j') }}</td>
+<tr><td>{{ day|date('l j F') }}</td>
 {% for session in sessions %}
 <td><label><input type="checkbox" class="session" id="{{ session.tag }}" name="{{ session.tag }}" {% if session.id in pf.sessions %}checked {% endif %}/>
 {{ session.start|time_midnight }}&ndash;{{ session.end|time_midnight }}
@@ -84,6 +84,6 @@ $(function() {
 {{ forms.submit('Volunteer') }}
 </form>
 
-<p>If you have a medical condition that you feel the festival should know about, please get in touch with the <a href="mailto:volunteering@cambridgebeerfestival.com">festival volunteering officer, either by email</a> or in person at the festival. Any such details will of course be treated in the strictest confidence and shared only with festival medical personnel.</p>
+<p>If you have a medical condition you feel the festival should know about, please get in touch with the <a href="mailto:volunteering@cambridgebeerfestival.com">festival volunteering officer, either by email</a> or in person at the festival. Any such details will of course be treated in the strictest confidence and shared only with festival medical personnel.</p>
 
 {% endblock %}

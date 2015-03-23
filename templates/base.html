@@ -14,6 +14,7 @@
 <nav>
 Logged in as {{ person.name }}
 {% if person.membership %}<em>(CAMRA member {{ person.membership }})</em>{% endif %}
+{% if festival.nonmembers or person.is_member() %} | <a href="volunteer.php" title="Volunteer">Volunteer</a>{% endif %}
  | <a href="logout.php" title="Logout">Logout</a>
 </nav>
 {% endif %}

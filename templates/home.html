@@ -8,25 +8,12 @@
 <p>Like all <abbr title="Campaign for Real Ale">CAMRA</abbr> beer festivals, the {{ festival.name }} is organised and run entirely by volunteers. Without those volunteers it simply wouldn't happen.</p>
 {% if person %}
 {% if festival.nonmembers or person.is_member() %}
-<p><a href="volunteer.php" title="Volunteer">Sign up</a></p>
+<p><strong><a href="volunteer.php" title="Volunteer">Volunteer for the festival</a></strong></p>
 {% else %}
 <p>We're not currently signing up volunteers who aren't members of CAMRA for this festival.</p>
 {% endif %}
 {% else %}
-<p>
-If you're a CAMRA member, please log in using your usual credentials below.
-{% if festival.nonmembers %}Otherwise you can <a href="nonmember.php">sign up as a non-member</a>.{% endif %}
-</p>
-<form method="POST" action="memberlogin.php">
-{{ forms.input('Membership number', 'number') }}
-{{ forms.input('Password', 'password', '', 'password') }}
-{{ forms.submit('Login') }}
-</form>
+{% include 'memberlogin-form.html' %}
 {% endif %}
-
-<p>In order to run the festival we need to store your name and some basic contact details. We'll also store everything you enter on the form. If we need more of your contact details we obtain that from central CAMRA records. After the festival we'll store minimal information for 1 year, so we can tell if you're a new volunteer at next year's festival.</p>
-
-<p>If you'd like more information about what data the beer festival holds on you please get in touch with the <a href="mailto:volunteering@cambridgebeerfestival.com">festival volunteering officer</a>.</p>
-
 {% endif %}
 {% endblock %}
