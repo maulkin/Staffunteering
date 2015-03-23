@@ -66,8 +66,8 @@ class PersonFestival extends Record {
 				$sth->execute(array($this->person->id, $this->festival->id, $flag));
 			}
 
-			$sth = db_prepare("UPDATE person_festival SET jobprefs=?, quals=? WHERE person=? AND festival=?");
-			$sth->execute(array($this->data['jobprefs'], $this->data['quals'], $this->person->id, $this->festival->id));
+			$sth = db_prepare("UPDATE person_festival SET jobprefs=?, quals=?, notes=? WHERE person=? AND festival=?");
+			$sth->execute(array($this->data['jobprefs'], $this->data['quals'], $this->data['notes'], $this->person->id, $this->festival->id));
 
 			db_commit();
 		}

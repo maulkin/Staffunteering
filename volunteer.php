@@ -64,6 +64,7 @@ if (($_SERVER['REQUEST_METHOD'] == 'POST')) {
 
 	$pf->jobprefs = isset($_POST['jobprefs']) ? $_POST['jobprefs'] : '';
 	$pf->quals = isset($_POST['quals']) ? $_POST['quals'] : '';
+	$pf->notes = isset($_POST['notes']) ? $_POST['notes'] : '';
 }
 
 if ($submitted && !$invalid) {
