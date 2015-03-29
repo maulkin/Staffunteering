@@ -24,3 +24,5 @@ $g_twig->addGlobal('festival', $g_festival);
 if (ServerConfig::SERVER_NAME) {
 	$g_twig->addGlobal('baseurl', ServerConfig::SERVER_NAME . ServerConfig::BASE_URL);
 }
+
+header("Content-Type: text/html; charset=utf-8");

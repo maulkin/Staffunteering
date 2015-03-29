@@ -43,7 +43,7 @@ $(function() {
 <p>If you're a CAMRA member, please <a href="memberlogin.php" title="Member login">login</a> before completing this form.</p>
 {% endif %}
 
-<form method="POST" action="">
+<form method="POST" action="" accept-charset="utf-8">
 {{ forms.input('What name would you like on your badge?', 'badgename', person ? (person.badgename|length ? person.badgename : person.name) : '') }}
 
 <div id="sessions">

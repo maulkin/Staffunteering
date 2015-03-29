@@ -2,7 +2,7 @@
 {% if festival.nonmembers %}Otherwise you can <strong><a href="nonmember.php">volunteer as a non-member</a></strong>.{% endif %}</p>
 {% if error_title %}<h2 class="error">{{ error_title|e }}</h2>{% endif %}
 {% if error_detail %}<p class="error">{{ error_detail|e }}</p>{% endif %}
-<form method="POST" action="memberlogin.php">
+<form method="POST" action="memberlogin.php" accept-charset="utf-8">
 {{ forms.input('Membership number', 'number') }}
 {{ forms.input('Password', 'password', '', 'password') }}
 <span class="password-tip"><a href="member-password.php" title="No password?" class="popup">Don't know your password?</a></span>

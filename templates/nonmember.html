@@ -26,7 +26,7 @@ $(function() {
 
 <h2>Existing volunteer</h2>
 {% if error_detail %}<p class="error">{{ error_detail|e }}</p>{% endif %}
-<form method="POST" action="">
+<form method="POST" action="" accept-charset="utf-8">
 {{ forms.input('Email address', 'login_email', '', 'email', 60) }}
 {{ forms.input('Password', 'login_password', '', 'password') }}
 {{ forms.submit('Login') }}
@@ -34,7 +34,7 @@ $(function() {
 
 <h2>New volunteer</h2>
 {% if newform.overall_err|length %}<p class="error">{{ newform.overall_err|e }}</p>{% endif %}
-<form method="POST" action="">
+<form method="POST" action="" accept-charset="utf-8">
 {{ forms.input('Name', 'name', newform.name, text, 60, newform.name_err, true) }}
 {{ forms.input('Email address', 'email', newform.email, 'email', 60, newform.email_err, true) }}
 {{ forms.textarea('Address', 'address', newform.address, 4, 80, newform.address_err, true) }}
