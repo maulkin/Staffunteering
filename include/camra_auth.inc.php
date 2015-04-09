@@ -26,7 +26,7 @@ function camra_authenticate ($membership_number, $password, &$error_code, &$debu
 	curl_setopt ($ch, CURLOPT_POSTFIELDS, "KEY=$key&memno=$memno&pass=$pass");
 	curl_setopt ($ch, CURLOPT_RETURNTRANSFER, 1);
 
-	if (1) // Use this if the CS starts failing for whatever reason.
+	if (ServerConfig::CAMRA_AUTH_IGNORE_SSL) // Use this if the CS starts failing for whatever reason.
 	{
 		curl_setopt ($ch, CURLOPT_SSL_VERIFYPEER, false);
 	}
@@ -34,7 +34,6 @@ function camra_authenticate ($membership_number, $password, &$error_code, &$debu
 	{
 		curl_setopt ($ch, CURLOPT_SSL_VERIFYPEER, true);
 		curl_setopt ($ch, CURLOPT_SSL_VERIFYHOST, 2);
-		curl_setopt ($ch, CURLOPT_CAINFO, getcwd() . "/priv/certs/ca/GeoTrustGlobalCA.crt");
 	}
 
 	// execute the POST method
