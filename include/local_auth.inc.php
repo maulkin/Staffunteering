@@ -17,6 +17,23 @@ function local_authenticate($email, $password)
 	}
 }
 
+function admin_authenticate($username, $password)
+{
+	/* Does the user exist? */
+	$sth = db_prepare("SELECT id,pwhash FROM user WHERE username=?");
+	$sth->execute(array($username));
+	$u = $sth->fetch(PDO::FETCH_OBJ);
+
+	if ($u) {
+		$test = crypt($password, $u->pwhash);
+		return ($test == $u->pwhash) ? $u->id : null;
+	} else {
+		/* Avoid timing shenanigans, but ignore string comparison time here. */
+		crypt($password, ServerConfig::LOCAL_AUTH_DUMMY_HASH);
+		return null;
+	}
+}
+
 function local_gethash($password)
 {
 	/* Create salt as required by crypt */
