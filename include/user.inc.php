@@ -15,7 +15,7 @@ class User extends Record {
 
 	public static function remove_persist()
 	{
-		idcookie_clear(ServerConfig::ADMIN_COOKIE_NAME, '', time() - 86400, ServerConfig::BASE_URL);
+		idcookie_clear(ServerConfig::ADMIN_COOKIE_NAME);
 	}
 
 	public static function from_persist()
