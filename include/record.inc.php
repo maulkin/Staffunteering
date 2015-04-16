@@ -1,6 +1,6 @@
 <?php
 
-class Record {
+class Record implements JsonSerializable {
 	protected $data;
 	protected $dirty;
 	protected $id;
@@ -18,6 +18,11 @@ class Record {
 			$this->data = array();
 		}
 		$this->dirty = array();
+	}
+
+	public function jsonSerialize()
+	{
+		return $this->data;
 	}
 
 	public function save()
