@@ -51,7 +51,7 @@ Logged in as <?php echo(h($g_user->username)); ?> | <a href="adminlogout.php" ti
 <li><a href="#badges-tab"><span id="badges-link">Badges</span></a></li>
 </ul>
 <div id="incoming-tab">
-<table id="incoming-table">
+<table id="incoming-table" class="stripe">
 <thead><tr><th>Name</th><th>Member</th><th>Job preferences</th><th>Qualifications</th><th>Notes</th><th></th></tr></thead>
 </table>
 </div>
@@ -73,7 +73,13 @@ var incoming_table = $("#incoming-table").DataTable( {
 		"dataSrc":""
 	},
 	"columns": [
-		{ "data": "name"},
+		{ "data": "name", "render": function(data, type, row) {
+			if (row.badgename != data) {
+				return data + " <em>(" + row.badgename + ")</em>";
+			} else {
+				return data;
+			}
+		}},
 		{ "data": "membership", "defaultContent": "-"},
 		{ "data": "jobprefs"},
 		{ "data": "quals"},
