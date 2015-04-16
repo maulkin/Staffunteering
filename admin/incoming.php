@@ -14,7 +14,7 @@ if (!$f) {
 	exit(0);
 }
 
-$sth = db_prepare("CALL festival_incoming(?)");
+$sth = db_prepare("SELECT p.id AS person_id,p.name AS name,badgename,membership,jobprefs,quals,notes FROM person p INNER JOIN person_festival pf ON p.id=pf.person WHERE pf.festival=festival AND pf.state='incoming' ORDER BY p.name;");
 $sth->execute(array($f->id));
 
 echo json_encode($sth->fetchAll(PDO::FETCH_OBJ));

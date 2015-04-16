@@ -52,7 +52,7 @@ Logged in as <?php echo(h($g_user->username)); ?> | <a href="adminlogout.php" ti
 </ul>
 <div id="incoming-tab">
 <table id="incoming-table">
-<thead><tr><th>Name</th><th>Job preferences</th><th>Qualifications</th><th>Notes</th><th></th></tr></thead>
+<thead><tr><th>Name</th><th>Member</th><th>Job preferences</th><th>Qualifications</th><th>Notes</th><th></th></tr></thead>
 </table>
 </div>
 <div id="volunteers-tab">
@@ -74,6 +74,7 @@ var incoming_table = $("#incoming-table").DataTable( {
 	},
 	"columns": [
 		{ "data": "name"},
+		{ "data": "membership", "defaultContent": "-"},
 		{ "data": "jobprefs"},
 		{ "data": "quals"},
 		{ "data": "notes"},
