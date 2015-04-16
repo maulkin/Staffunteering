@@ -19,6 +19,10 @@ function h($t)
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Cambridge Beer Festival Volunteering - Adminisration</title>
+<?php
+if (ServerConfig::SERVER_NAME)
+	echo "<base href=\"" . ServerConfig::SERVER_NAME . ServerConfig::BASE_URL . "admin/\" />\n";
+?>
 <style>
 header, nav {
 	background-color: #701d10 !important;

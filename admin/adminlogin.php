@@ -44,7 +44,7 @@ if (!$present_form) {
 <title>Admin Login - Cambridge Beer Festival Volunteering</title>
 <?php
 if (ServerConfig::SERVER_NAME)
-	echo "<base href=\"" . ServerConfig::SERVER_NAME . ServerConfig::BASE_URL . "\" />\n";
+	echo "<base href=\"" . ServerConfig::SERVER_NAME . ServerConfig::BASE_URL . "admin/\" />\n";
 ?>
 <link rel="stylesheet" href="../style/base.css" />
 </head>
