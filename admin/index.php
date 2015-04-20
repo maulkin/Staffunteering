@@ -56,7 +56,9 @@ Logged in as <?php echo(h($g_user->username)); ?> | <a href="adminlogout.php" ti
 </table>
 </div>
 <div id="volunteers-tab">
-<p>Table of existing volunteers</p>
+<table id="volunteer-table" class="stripe">
+<thead><tr><th>Name</th><th>Member</th><th></th></tr></thead>
+</table>
 </div>
 <div id="badges-tab">
 <p>Badge generation, including custom badges</p>
@@ -64,8 +66,6 @@ Logged in as <?php echo(h($g_user->username)); ?> | <a href="adminlogout.php" ti
 </main>
 
 <script>
-$("#tabs").tabs();
-
 var incoming_table = $("#incoming-table").DataTable( {
 	"autoWidth":false,
 	"ajax": {
@@ -84,7 +84,7 @@ var incoming_table = $("#incoming-table").DataTable( {
 		{ "data": "jobprefs"},
 		{ "data": "quals"},
 		{ "data": "notes"},
-		{ "data": null, "defaultContent": "<button class='accept-button'>Accept</button>", "orderable":false }
+		{ "data": null, "defaultContent": "<button class='accept-button'>Accept</button>", "orderable":false, "searchable":false }
 		]
 });
 
@@ -96,6 +96,35 @@ $("#incoming-table tbody").on('click', 'button', function() {
 		function(data) {
 			row.remove().draw(false);
 		});
+});
+
+var volunteer_table = $("#volunteer-table").DataTable( {
+	"autoWidth":false,
+	"ajax": {
+		"url":"volunteers.php",
+		"dataSrc":""
+	},
+	"columns": [
+		{ "data": "name", "render": function(data, type, row) {
+			if (row.badgename != data) {
+				return data + " <em>(" + row.badgename + ")</em>";
+			} else {
+				return data;
+			}
+		}},
+		{ "data": "membership", "defaultContent": "-"},
+		{ "data": null, "defaultContent": "Details...", "orderable":false, "searchable":false }
+		]
+});
+
+$("#tabs").tabs({
+	activate: function(event, ui) {
+		if (ui.newPanel.is("#incoming-tab")) {
+			incoming_table.ajax.reload();
+		} else if (ui.newPanel.is("#volunteers-tab")) {
+			volunteer_table.ajax.reload();
+		}
+	}
 });
 
 </script>
