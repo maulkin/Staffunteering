@@ -41,16 +41,21 @@ if (!$present_form) {
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>Admin Login - Cambridge Beer Festival Volunteering</title>
+<title>Cambridge Beer Festival Volunteering - Adminisration</title>
 <?php
 if (ServerConfig::SERVER_NAME)
 	echo "<base href=\"" . ServerConfig::SERVER_NAME . ServerConfig::BASE_URL . "admin/\" />\n";
 ?>
+<style>
+header {
+	background-color: #701d10 !important;
+}
+</style>
 <link rel="stylesheet" href="../style/base.css" />
 </head>
 <body>
 <header>
-<h1>Cambridge Beer Festival Admin Login</h1>
+<h1>Administration - Cambridge Beer Festival Volunteering</h1>
 </header>
 <main>
 <p>This is the administrative login only.</p>
@@ -60,7 +65,7 @@ if ($error_detail)
 ?>
 <form method="POST" action="" accept-charset="utf-8">
 <label for="username">Username</label>
-<input type="username" id="username" name="username" value="" size="60" />
+<input type="username" id="username" name="username" value=""  />
 
 <label for="password">Password</label>
 <input type="password" id="password" name="password" value="" />
