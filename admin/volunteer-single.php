@@ -28,7 +28,8 @@ $pf = new PersonFestival($p, $f);
 /* Return specific elements. TODO: add more. */
 $p_filter = [
 	"name" => $p->name,
-	"email" => $p->email
+	"email" => $p->email,
+	"address" => $p->address
 	];
 
 echo json_encode([

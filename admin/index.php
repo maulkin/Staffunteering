@@ -37,6 +37,19 @@ tr.shown td.details-control {
 	background: url('../graphics/details_close.png') no-repeat center center;
 }
 
+.volunteer-details h2 {
+	margin: 0 0 5px 0;
+}
+
+.volunteer-details {
+	clear: both;
+}
+
+.volunteer-details .column {
+	float: left;
+	margin-right: 20px;
+}
+
 </style>
 <link rel="stylesheet" href="../style/base.css">
 <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
@@ -79,6 +92,7 @@ Logged in as <?php echo(h($g_user->username)); ?> | <a href="adminlogout.php" ti
 
 var festival_data = null;
 var festival_sessions = {};
+var festival_flags = {};
 
 $.ajax({
 	"dataType": "json",
@@ -90,20 +104,33 @@ $.ajax({
 	}
 });
 
+function format_time(dt)
+{
+	var s = dt.toTimeString().substr(0,5);
+	return (s == "00:00") ? "midnight" : s;
+}
+
 if (!festival_data) {
 	alert("Failed to load festival data. Fuck.");
 } else {
 	/* Transform session data for lookup */
 	$.each(festival_data.sessions, function(group, day) {
 		$.each(day, function(session_date, session_list) {
-			var date = new Date(session_date);
 			$.each(session_list, function(index, session_data) {
+				var start = new Date(session_data.start);
+				var end = new Date(session_data.end);
 				festival_sessions[session_data.id] = {
 					"raw": session_data,
-					"name": group + " " + $.datepicker.formatDate('dd M yy', date)
+					"name": group + " " + $.datepicker.formatDate('D d M', start) + " " +
+						format_time(start) + "-" + format_time(end)
 				};
 			});
 		});
+	});
+
+	/* Format flags. */
+	$.each(festival_data.flags, function(index, flagdata) {
+		festival_flags[flagdata.id] = flagdata.description;
 	});
 }
 
@@ -176,13 +203,32 @@ function format_volunteer_details(data)
 {
 	var f = "<div class='volunteer-details'>";
 
+	console.log(data);
+
+	f += "<div class='column'><h2>Contact information</h2>";
 	if (data.person.email) {
-		f += "<span class='email'><a href='mailto:" + data.person.email + "' target='_blank'>" + data.person.email + "</a></span>";
+		f += "<div class='email'><a href='mailto:" + data.person.email + "' target='_blank'>" + data.person.email + "</a></div>";
 	} else {
-		f += "<span class='email'>No email address available</span>";
+		f += "<div class='email'>No email address available</div>";
 	}
 
-	if (data.sessions) {
+	if (data.person.address) {
+		f += "<div class='address'>" + data.person.address + "</div>";
+	}
+	f += "</div>";
+
+    f += "<div class='column'><h2>Festival information</h2>";
+	if (data.flags.length) {
+		f += "<div><h3>Requests</h3><ul>";
+		$.each(data.flags, function(index, flag_id) {
+			if (flag_id in festival_flags) {
+				f += "<li>" + festival_flags[flag_id];
+			}
+		});
+		f += "</div>";
+	}
+
+	if (data.sessions.length) {
 		f += "<div><h3>Sessions</h3><ul>";
 		$.each(data.sessions, function(index, session_id) {
 			if (session_id in festival_sessions) {
@@ -191,14 +237,16 @@ function format_volunteer_details(data)
 		});
 		f += "</div>";
 	}
+	f += "</div>";
 
 	f += "</div>";
 	return f;
 }
 
-$("#volunteer-table tbody").on('click', 'td.details-control', function() {
+$("#volunteer-table tbody, #incoming-table tbody").on('click', 'td.details-control', function() {
 	var tr = $(this).parents('tr');
-	var row = volunteer_table.row(tr);
+	var dt = $(this).parents('table').DataTable();
+	var row = dt.row(tr);
 
 	if (row.child.isShown()) {
 		row.child.hide();

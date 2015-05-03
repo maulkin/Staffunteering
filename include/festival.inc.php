@@ -28,8 +28,8 @@ class Festival extends Record {
 				$this->data['sessions'][$session->sgroup][$day][] = [
 					'id' => $session->id,
 					'tag' => 'sess_' . $session->id,
-					'start' => $session->start,
-					'end' => $session->end,
+					'start' => strftime('%FT%T', strtotime($session->start)),
+					'end' => strftime('%FT%T', strtotime($session->end)),
 					];
 			}
 		}
