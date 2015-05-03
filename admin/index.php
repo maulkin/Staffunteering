@@ -24,6 +24,10 @@ if (ServerConfig::SERVER_NAME)
 	echo "<base href=\"" . ServerConfig::SERVER_NAME . ServerConfig::BASE_URL . "admin/\" />\n";
 ?>
 <style>
+html {
+	overflow-y: scroll;
+}
+
 header, nav {
 	background-color: #701d10 !important;
 }
