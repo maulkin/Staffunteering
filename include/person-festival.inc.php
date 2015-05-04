@@ -69,7 +69,7 @@ class PersonFestival extends Record {
 			$this->save_list('flag', $this->data['flags']);
 			$this->save_list('job', $this->data['jobs']);
 
-			$sth = db_prepare("UPDATE person_festival SET jobprefs=?, quals=?, notes=? WHERE person=? AND festival=?");
+			$sth = db_prepare("UPDATE person_festival SET jobprefs=?, quals=?, notes=?, badge_printed=0 WHERE person=? AND festival=?");
 			$sth->execute(array($this->data['jobprefs'], $this->data['quals'], $this->data['notes'], $this->person->id, $this->festival->id));
 
 			db_commit();
