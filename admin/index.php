@@ -103,7 +103,7 @@ Logged in as <?php echo(h($g_user->username)); ?> | <a href="adminlogout.php" ti
 </table>
 </div>
 <div id="badges">
-<p>Badge generation, including custom badges</p>
+<p><a href="badge-generate.php">Get new volunteer badges</a></p>
 </div>
 </main>
 
@@ -290,7 +290,7 @@ function format_volunteer_details(data)
 	f += "</div>";
 
 	/* Job assignment. */
-	f += "<div class='column job-list'><h2>Festival jobs</h2>";
+	f += "<div class='column job-list'><h2>Festival jobs</h2><p><button class='badge-reprint-button'>Reprint badge</button></p>";
 	if (data.jobs.length) {
 		f += "<ul class='job-list'>";
 		$.each(data.jobs, function(index, job_id) {
@@ -377,6 +377,12 @@ $(".volunteer-list tbody").on('click', 'button.add-job-button', function() {
 				new_li.slideDown('fast');
 			}
 		});
+});
+
+$(".volunteer-list tbody").on('click', 'button.badge-reprint-button', function() {
+	var person_id = $(this).closest('div.volunteer-details').attr('data-person-id');
+	$.post("badge-reprint.php", {"person":person_id}).done(
+		$(this).effect('highlight'));
 });
 
 $("#incoming-table tbody").on('click', 'button.accept-button', function() {

@@ -132,4 +132,9 @@ class PersonFestival extends Record {
 	{
 		$this->drop_from_list('jobs', $id);
 	}
+
+	public function badge_reprint()
+	{
+		$this->dirty['badge_printed'] = true;
+	}
 }
