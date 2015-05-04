@@ -75,17 +75,27 @@ Logged in as <?php echo(h($g_user->username)); ?> | <a href="adminlogout.php" ti
 <ul>
 <li><a href="#incoming"><span id="incoming-link">Incoming</span></a></li>
 <li><a href="#volunteers"><span id="volunteers-link">Volunteers</span></a></li>
+<li><a href="#sessions"><span id="sessions-link">Sessions</span></a></li>
+<li><a href="#reports"><span id="reports-link">Reports</span></a></li>
 <li><a href="#badges"><span id="badges-link">Badges</span></a></li>
 </ul>
 <div id="incoming">
-<table id="incoming-table" class="stripe">
+<table id="incoming-table" class="volunteer-list stripe">
 <thead><tr><th></th><th>Name</th><th>Member</th><th>Job preferences</th><th>Qualifications</th><th>Notes</th><th></th></tr></thead>
 </table>
 </div>
 <div id="volunteers">
-<table id="volunteer-table" class="stripe">
+<table id="volunteer-table" class="volunteer-list stripe">
 <thead><tr><th></th><th>Name</th><th>Member</th></tr></thead>
 </table>
+</div>
+<div id="sessions">
+<select id="session-selector"></select>
+<table id="session-volunteer-table" class="volunteer-list stripe">
+<thead><tr><th></th><th>Name</th><th>Member</th></tr></thead>
+</table>
+</div>
+<div id="reports">
 </div>
 <div id="badges">
 <p>Badge generation, including custom badges</p>
@@ -143,6 +153,12 @@ if (!festival_data) {
 		});
 	});
 
+	/* Add options for session selection. */
+	$.each(festival_sessions, function(session_id, data) {
+		$("#session-selector").append($("<option/>", {
+			"value":session_id, "text":data.name}));
+	});
+
 	/* Format flags. */
 	$.each(festival_data.flags, function(index, flagdata) {
 		festival_flags[flagdata.id] = flagdata.description;
@@ -173,12 +189,13 @@ var incoming_table = $("#incoming-table").DataTable( {
 	"order": [[ 1, "asc" ]]
 });
 
-var volunteer_table = $("#volunteer-table").DataTable( {
+var volunteer_table_options = {
 	"autoWidth": false,
 	"ajax": {
-		"url":"volunteers.php",
-		"dataSrc":""
+		"dataSrc":"",
+		"url":"empty.json"
 	},
+	"deferLoading":10,
 	"columns": [
 		{ "data": null, "className":'details-control', "defaultContent": "", "orderable":false, "searchable":false, "width":"20px" },
 		{ "data": "name", "render": function(data, type, row) {
@@ -191,7 +208,16 @@ var volunteer_table = $("#volunteer-table").DataTable( {
 		{ "data": "membership", "defaultContent": "-"},
 		],
 	"order": [[ 1, "asc" ]]
-});
+};
+
+var volunteer_table = $("#volunteer-table").DataTable(volunteer_table_options);
+volunteer_table.ajax.url("volunteers.php").load();
+
+var session_volunteer_table = $("#session-volunteer-table").DataTable(volunteer_table_options);
+
+$("#session-selector").change(function() {
+	session_volunteer_table.ajax.url("session-volunteers.php?session=" + $(this).val()).load();
+})
 
 function get_volunteer_details(id, target)
 {
@@ -273,7 +299,7 @@ function format_volunteer_details(data)
 	return $.parseHTML(f);
 }
 
-$("#volunteer-table tbody, #incoming-table tbody").on('click', 'td.details-control', function() {
+$(".volunteer-list tbody").on('click', 'td.details-control', function() {
 	var tr = $(this).closest('tr');
 	var dt = $(this).closest('table').DataTable();
 	var row = dt.row(tr);
@@ -288,7 +314,7 @@ $("#volunteer-table tbody, #incoming-table tbody").on('click', 'td.details-contr
 	}
 });
 
-$("#volunteer-table tbody, #incoming-table tbody").on('click', 'button.drop-job-button', function() {
+$(".volunteer-list tbody").on('click', 'button.drop-job-button', function() {
 	var wrapper = $(this).closest('div.job-list');
 	var li = $(this).closest('li');
 	var job_list = li.closest('ul');
@@ -308,7 +334,7 @@ $("#volunteer-table tbody, #incoming-table tbody").on('click', 'button.drop-job-
 		});
 });
 
-$("#volunteer-table tbody, #incoming-table tbody").on('click', 'button.add-job-button', function() {
+$(".volunteer-list tbody").on('click', 'button.add-job-button', function() {
 	var wrapper = $(this).closest('div.job-list');
 	var job_id = wrapper.find('select').first().val();
 	var person_id = $(this).closest('div.volunteer-details').attr('data-person-id');
