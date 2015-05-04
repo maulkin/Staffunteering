@@ -180,11 +180,11 @@ if stafflist:
     b = BadgeGen(f, args.output)
 
     for staff in stafflist:
-        staff['name'] = staff['name'].decode('iso-8859-1').encode('utf-8')
+        staff['name'] = staff['name']
         if not 'altname' in staff:
             staff['altname'] = None
 	else:
-            staff['altname'] = staff['altname'].decode('iso-8859-1').encode('utf-8')
+            staff['altname'] = staff['altname']
         b.Render(staff)
 
     b.Save()
