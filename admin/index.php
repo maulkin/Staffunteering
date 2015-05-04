@@ -90,12 +90,17 @@ Logged in as <?php echo(h($g_user->username)); ?> | <a href="adminlogout.php" ti
 </table>
 </div>
 <div id="sessions">
-<select id="session-selector"></select>
+<select id="session-selector"><option value="0" selected style="display:none;">Select session...</option></select>
 <table id="session-volunteer-table" class="volunteer-list stripe">
 <thead><tr><th></th><th>Name</th><th>Member</th></tr></thead>
 </table>
 </div>
 <div id="reports">
+<select id="report-selector"><option value="0" selected style="display:none;">Select report...</option></select>
+<a id="download-report-link" style="display:none;" href="">Download report...</a>
+<table id="report-volunteer-table" class="volunteer-list stripe">
+<thead><tr><th></th><th>Name</th><th>Member</th></tr></thead>
+</table>
 </div>
 <div id="badges">
 <p>Badge generation, including custom badges</p>
@@ -162,6 +167,8 @@ if (!festival_data) {
 	/* Format flags. */
 	$.each(festival_data.flags, function(index, flagdata) {
 		festival_flags[flagdata.id] = flagdata.description;
+		$("#report-selector").append($("<option/>", {
+			"value":flagdata.id, "text":flagdata.description}));
 	});
 }
 
@@ -214,9 +221,21 @@ var volunteer_table = $("#volunteer-table").DataTable(volunteer_table_options);
 volunteer_table.ajax.url("volunteers.php").load();
 
 var session_volunteer_table = $("#session-volunteer-table").DataTable(volunteer_table_options);
-
 $("#session-selector").change(function() {
-	session_volunteer_table.ajax.url("session-volunteers.php?session=" + $(this).val()).load();
+	var session_id = $(this).val();
+	if (session_id) {
+		session_volunteer_table.ajax.url("session-volunteers.php?session=" + session_id).load();
+	}
+})
+
+var report_volunteer_table = $("#report-volunteer-table").DataTable(volunteer_table_options);
+$("#report-selector").change(function() {
+	var flag_id = $(this).val();
+	if (flag_id) {
+		var report_url = "report.php?report=flag&flag=" + flag_id;
+		report_volunteer_table.ajax.url(report_url).load();
+		$("#download-report-link").attr("href", report_url + "&format=csv").show();
+	}
 })
 
 function get_volunteer_details(id, target)
