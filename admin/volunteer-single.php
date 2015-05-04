@@ -27,6 +27,7 @@ $pf = new PersonFestival($p, $f);
 
 /* Return specific elements. TODO: add more. */
 $p_filter = [
+	"id" => $p->id,
 	"name" => $p->name,
 	"email" => $p->email,
 	"address" => $p->address
@@ -35,4 +36,6 @@ $p_filter = [
 echo json_encode([
 	"person" => $p_filter,
 	"sessions" => $pf->sessions,
-	"flags" => $pf->flags]);
+	"flags" => $pf->flags,
+	"jobs" => $pf->jobs
+	]);

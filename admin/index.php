@@ -95,6 +95,7 @@ Logged in as <?php echo(h($g_user->username)); ?> | <a href="adminlogout.php" ti
 <script>
 
 var festival_data = null;
+var available_jobs = null;
 var festival_sessions = {};
 var festival_flags = {};
 
@@ -105,6 +106,16 @@ $.ajax({
 	"global": false,
 	"success": function (data) {
 		festival_data = data;
+	}
+});
+
+$.ajax({
+	"dataType": "json",
+	"url": "jobs.php",
+	"async": false,
+	"global": false,
+	"success": function (data) {
+		available_jobs = data;
 	}
 });
 
@@ -162,16 +173,6 @@ var incoming_table = $("#incoming-table").DataTable( {
 	"order": [[ 1, "asc" ]]
 });
 
-$("#incoming-table tbody").on('click', 'button', function() {
-	var row = incoming_table.row($(this).parents('tr'));
-	var person_id = row.data().person_id;
-
-	$.post("accept-incoming.php", {person:person_id}).done(
-		function(data) {
-			row.remove().draw(false);
-		});
-});
-
 var volunteer_table = $("#volunteer-table").DataTable( {
 	"autoWidth": false,
 	"ajax": {
@@ -205,10 +206,9 @@ function get_volunteer_details(id, target)
 
 function format_volunteer_details(data)
 {
-	var f = "<div class='volunteer-details'>";
+	var f = "<div class='volunteer-details' data-person-id='" + data.person.id + "'>";
 
-	console.log(data);
-
+	/* Contact information */
 	f += "<div class='column'><h2>Contact information</h2>";
 	if (data.person.email) {
 		f += "<div class='email'><a href='mailto:" + data.person.email + "' target='_blank'>" + data.person.email + "</a></div>";
@@ -221,12 +221,13 @@ function format_volunteer_details(data)
 	}
 	f += "</div>";
 
-    f += "<div class='column'><h2>Festival information</h2>";
+	/* Information relating to this festival. */
+	f += "<div class='column'><h2>Festival information</h2>";
 	if (data.flags.length) {
 		f += "<div><h3>Requests</h3><ul>";
 		$.each(data.flags, function(index, flag_id) {
 			if (flag_id in festival_flags) {
-				f += "<li>" + festival_flags[flag_id];
+				f += "<li data-flag-id='" + flag_id + "'>" + festival_flags[flag_id];
 			}
 		});
 		f += "</div>";
@@ -236,20 +237,45 @@ function format_volunteer_details(data)
 		f += "<div><h3>Sessions</h3><ul>";
 		$.each(data.sessions, function(index, session_id) {
 			if (session_id in festival_sessions) {
-				f += "<li>" + festival_sessions[session_id].name;
+				f += "<li data-session-id='" + session_id + "'>" + festival_sessions[session_id].name;
 			}
 		});
 		f += "</div>";
 	}
 	f += "</div>";
 
+	/* Job assignment. */
+	f += "<div class='column job-list'><h2>Festival jobs</h2>";
+	if (data.jobs.length) {
+		f += "<ul class='job-list'>";
+		$.each(data.jobs, function(index, job_id) {
+			if (job_id in available_jobs) {
+				f += "<li data-job-id='" + job_id + "'>" + available_jobs[job_id].name + "<button class='drop-job-button'>Drop</button>";
+			}
+		});
+		f += "</ul>";
+	} else {
+		f += "<p class='job-empty'>No specific jobs assigned</p>"
+	}
+	f += "<label>New role:<select class='add-job-select'>"
+	$.each(available_jobs, function(id, job) {
+		f += "<option value='" + id + "'";
+		if ($.inArray(id, data.jobs) >= 0) {
+			f += " disabled";
+		}
+		f += ">" + job.name + "</option>";
+	});
+	f += "</select></label><button class='add-job-button'>Add</button>";
 	f += "</div>";
-	return f;
+
+	f += "</div>";
+
+	return $.parseHTML(f);
 }
 
 $("#volunteer-table tbody, #incoming-table tbody").on('click', 'td.details-control', function() {
-	var tr = $(this).parents('tr');
-	var dt = $(this).parents('table').DataTable();
+	var tr = $(this).closest('tr');
+	var dt = $(this).closest('table').DataTable();
 	var row = dt.row(tr);
 
 	if (row.child.isShown()) {
@@ -262,6 +288,63 @@ $("#volunteer-table tbody, #incoming-table tbody").on('click', 'td.details-contr
 	}
 });
 
+$("#volunteer-table tbody, #incoming-table tbody").on('click', 'button.drop-job-button', function() {
+	var wrapper = $(this).closest('div.job-list');
+	var li = $(this).closest('li');
+	var job_list = li.closest('ul');
+	var job_id = li.attr('data-job-id');
+	var person_id = $(this).closest('div.volunteer-details').attr('data-person-id');
+
+	$.post("set-volunteer-job.php", {"person":person_id, "job":job_id, "op":"drop"}).done(
+		function(data) {
+			wrapper.find('select option[value="' + job_id + '"]').first().removeAttr("disabled");
+			if (job_list.children("li").length == 1) {
+				job_list.replaceWith("<p class='job-empty'>No specific roles assigned</p>");
+			} else {
+				li.slideUp('fast', function() {
+					li.remove();
+				});
+			}
+		});
+});
+
+$("#volunteer-table tbody, #incoming-table tbody").on('click', 'button.add-job-button', function() {
+	var wrapper = $(this).closest('div.job-list');
+	var job_id = wrapper.find('select').first().val();
+	var person_id = $(this).closest('div.volunteer-details').attr('data-person-id');
+
+	if (!job_id)
+		return;
+
+	$.post("set-volunteer-job.php", {"person":person_id, "job":job_id, "op":"add"}).done(
+		function(data) {
+			wrapper.find('select option[value="' + job_id + '"]').first().attr("disabled","");
+			var new_li = $("<li data-job-id='" + job_id + "'>" + available_jobs[job_id].name + "<button class='drop-job-button'>Drop</button>");
+			var empty = wrapper.find("p.job-empty").first();
+			if (empty.length) {
+				var job_list = $("<ul class='job-list'>");
+				new_li.appendTo(job_list);
+				empty.replaceWith(job_list);
+			} else {
+				var job_list = wrapper.find("ul.job-list").first();
+				new_li.hide();
+				new_li.appendTo(job_list);
+				new_li.slideDown('fast');
+			}
+		});
+});
+
+$("#incoming-table tbody").on('click', 'button.accept-button', function() {
+	var row = incoming_table.row($(this).closest('tr'));
+	var person_id = row.data().person_id;
+
+	$.post("accept-incoming.php", {person:person_id}).done(
+		function(data) {
+			row.remove().draw(false);
+		});
+});
+
+/* Reload data on tab activation. */
 $("#tabs").tabs({
 	beforeActivate: function (event, ui) {
 		window.location.hash = ui.newPanel.attr('id');
