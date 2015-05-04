@@ -47,7 +47,7 @@ switch ($format) {
 
 	case 'csv':
 		header("Content-Type: text/csv; charset=utf-8");
-		header ("Content-Disposition: attachment; filename=report.csv");
+		header("Content-Disposition: attachment; filename=report.csv");
 		$out = fopen('php://output', 'w');
 		/* Include UTF-8 BOM - keeps Excel happier. */
 		fwrite($out, chr(0xEF) . chr(0xBB) . chr(0xBF));
