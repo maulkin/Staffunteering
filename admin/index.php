@@ -46,12 +46,19 @@ tr.shown td.details-control {
 }
 
 .volunteer-details {
+	background-color: #ffffcc;
 	clear: both;
 }
 
 .volunteer-details .column {
 	float: left;
 	margin-right: 20px;
+}
+
+.volunteer-details .internal-details {
+	clear: both;
+	font-size: small;
+	font-style: italic;
 }
 
 </style>
@@ -312,6 +319,8 @@ function format_volunteer_details(data)
 	});
 	f += "</select></label><button class='add-job-button'>Add</button>";
 	f += "</div>";
+
+	f += "<div class='internal-details'>person.id: " + data.person.id + "</div>";
 
 	f += "</div>";
 
