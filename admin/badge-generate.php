@@ -26,7 +26,7 @@ if ($sth->rowCount() == 0) {
 	exit(0);
 }
 
-$sth = db_prepare("SELECT person.name AS real_name, person.badgename AS badge_name, job.double_sided AS double_sided, job.name AS job FROM person INNER JOIN person_festival pf ON person.id=pf.person LEFT JOIN pf_job USING (person,festival) LEFT JOIN job ON pf_job.job=job.id WHERE pf.badge_set=? ORDER BY job.double_sided DESC,person.badgename");
+$sth = db_prepare("SELECT person.name AS real_name, person.badgename AS badge_name, job.double_sided AS double_sided, job.name AS job, person.id AS person_id FROM person INNER JOIN person_festival pf ON person.id=pf.person LEFT JOIN pf_job USING (person,festival) LEFT JOIN job ON pf_job.job=job.id WHERE pf.badge_set=? ORDER BY job.double_sided DESC,person.badgename");
 $sth->execute([$badge_set]);
 
 $badge_list = tempnam(sys_get_temp_dir(), "volcsv");
@@ -34,7 +34,7 @@ $pdf = tempnam(sys_get_temp_dir(), "volpdf");
 
 $badge_file = fopen($badge_list, 'w');
 while ($entry = $sth->fetch(PDO::FETCH_OBJ)) {
-	$row = [$entry->badge_name, NULL, $entry->job];
+	$row = [$entry->badge_name, NULL, $entry->job, $entry->person_id];
 	if ($entry->double_sided) {
 		$row[1] = $entry->real_name;
 	}

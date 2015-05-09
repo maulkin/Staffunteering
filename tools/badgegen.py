@@ -138,6 +138,10 @@ class BadgeGen():
             self.canvas.setFont("Times-Roman", 16)
             self.canvas.drawCentredString(left + width/2, bottom+3*mm, data['job'])
 
+        if data['id']:
+            self.canvas.setFont("Courier", 8)
+            self.canvas.drawRightString(left + width - 1*mm, bottom+3*mm, data['id'])
+
         self.index = index + 1
 
         if data['altname']:
@@ -148,7 +152,7 @@ class BadgeGen():
 
     def Save(self):
         # Fill the rest of the sheet with useful blanks.
-        blank = {'name':'', 'job':'Volunteer', 'altname':None}
+        blank = {'name':'', 'job':'Volunteer', 'altname':None, 'id':None}
         while self.index % self.bps:
             self.Render (blank, self.colour)
 
@@ -169,22 +173,17 @@ args = parser.parse_args()
 stafflist = None
 
 if args.staff_format == 'csv':
-    stafflist = csv.DictReader(args.staff, fieldnames=['name','altname','job'])
-    print "Using CSV"
+    stafflist = csv.DictReader(args.staff, fieldnames=['name','altname','job','id'])
 elif args.staff_format == 'json':
     stafflist = json.load(args.staff)
-    print "Using JSON"
 
 if stafflist:
     f = {'name':args.festival_name, 'logo':args.festival_logo}
     b = BadgeGen(f, args.output)
 
-    for staff in stafflist:
-        staff['name'] = staff['name']
-        if not 'altname' in staff:
-            staff['altname'] = None
-	else:
-            staff['altname'] = staff['altname']
-        b.Render(staff)
+    for badge in stafflist:
+        if not 'altname' in badge:
+            badge['altname'] = None
+        b.Render(badge)
 
     b.Save()
