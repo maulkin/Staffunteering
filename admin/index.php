@@ -65,6 +65,12 @@ button.submit {
 	display: block;
 	margin: 2ex 0;
 }
+
+a.pdf {
+	background: transparent url("../graphics/pdf_file.png") center right no-repeat;
+	padding-right: 34px;
+}
+
 </style>
 <link rel="stylesheet" href="../style/base.css">
 <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
@@ -134,7 +140,19 @@ Logged in as <?php echo(h($g_user->username)); ?> | <a href="adminlogout.php" ti
 </table>
 </div>
 <div id="badges">
-<p><a href="badge-generate.php">Get new volunteer badges</a></p>
+<p><a href="badge-generate.php" class="pdf">Get pending badges</a></p>
+<h2>Custom badges</h2>
+<form id="custom-badge-form">
+<label class="required" for="custom-badge-name">Name</label>
+<input required type="text" id="custom-badge-name" name="custom-badge-name" value="" size="50">
+<label class="required" for="custom-badge-job">Job</label>
+<input required type="text" id="custom-badge-job" name="custom-badge-job" value="" size="50">
+<button type="submit" id="custom-badge-submit">Add</button>
+<span id="custom-badge-status" style="display:none;"></span>
+</form>
+<table id="custom-badge-table" class="stripe">
+<thead><tr><th>Name</th><th>Job</th><th></th></tr></thead>
+</table>
 </div>
 </main>
 
@@ -269,6 +287,20 @@ $("#report-selector").change(function() {
 	}
 })
 
+var badge_table = $("#custom-badge-table").DataTable( {
+	"autoWidth": false,
+	"ajax": {
+		"url":"badge-list.php",
+		"dataSrc":""
+	},
+	"columns": [
+		{ "data": "name" },
+		{ "data": "job"},
+		{ "data": null, "defaultContent": "<button class='custom-badge-reprint-button'>Reprint</button>", "orderable":false, "searchable":false }
+		],
+	"order": [[ 1, "asc" ]]
+});
+
 function get_volunteer_details(id, target)
 {
 	$.get("volunteer-single.php?person=" + id)
@@ -321,7 +353,7 @@ function format_volunteer_details(data)
 	f += "</div>";
 
 	/* Job assignment. */
-	f += "<div class='column job-list'><h2>Festival jobs</h2><p><button class='badge-reprint-button'>Reprint badge</button></p>";
+	f += "<div class='column job-list'><h2>Festival jobs</h2><p><button class='volunteer-badge-reprint-button'>Reprint badge</button></p>";
 	if (data.jobs.length) {
 		f += "<ul class='job-list'>";
 		$.each(data.jobs, function(index, job_id) {
@@ -412,9 +444,15 @@ $(".volunteer-list tbody").on('click', 'button.add-job-button', function() {
 		});
 });
 
-$(".volunteer-list tbody").on('click', 'button.badge-reprint-button', function() {
+$(".volunteer-list tbody").on('click', 'button.volunteer-badge-reprint-button', function() {
 	var person_id = $(this).closest('div.volunteer-details').attr('data-person-id');
 	$.post("badge-reprint.php", {"person":person_id}).done(
+		$(this).effect('highlight'));
+});
+
+$("#custom-badge-table tbody").on('click', 'button.custom-badge-reprint-button', function() {
+	var badge_id = badge_table.row($(this).closest('tr')).data().id;
+	$.post("badge-reprint.php", {"badge":badge_id}).done(
 		$(this).effect('highlight'));
 });
 
@@ -471,6 +509,26 @@ $("#add-volunteer-form").on('submit', function(event) {
 			} else {
 				$("#add-volunteer-status").html("<span class='error'>Unknown error</span>").show();
 			}
+		});
+});
+
+$("#custom-badge-form").on('submit', function(event) {
+	$("#custom-badge-status").hide();
+	event.preventDefault();
+	var data = {
+		"name":$("#custom-badge-name").val(),
+		"job":$("#custom-badge-job").val()
+	};
+
+	$.post("badge-add.php", data)
+		.done(function (data) {
+			badge_table.row.add(data).draw();
+			$("#custom-badge-status").text("Added").show().hide("highlight", null, 3000);
+			// Leave job field in place.
+			$("#custom-badge-name").val("");
+		})
+		.fail(function () {
+			$("#custom-badge-status").html("<span class='error'>Unexpected item in the badging area</span>").show();
 		});
 });
 

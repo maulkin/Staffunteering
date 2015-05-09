@@ -21,28 +21,47 @@ $badge_set = strftime('%Y%m%d-%H%M%S-') . sprintf("%05x", (microtime(true)*10000
 db_begin();
 $sth = db_prepare("UPDATE person_festival SET badge_set=? WHERE badge_printed=0 AND festival=? AND state='approved'");
 $sth->execute([$badge_set, $f->id]);
-if ($sth->rowCount() == 0) {
+$volunteer_badge_count = $sth->rowCount();
+
+$sth = db_prepare("UPDATE badge SET badge_set=? WHERE badge_printed=0 AND festival=?");
+$sth->execute([$badge_set, $f->id]);
+$other_badge_count = $sth->rowCount();
+
+if (($volunteer_badge_count + $other_badge_count) == 0) {
 	http_response_code(204);
 	exit(0);
 }
 
-$sth = db_prepare("SELECT person.name AS real_name, person.badgename AS badge_name, job.double_sided AS double_sided, job.name AS job, person.id AS person_id FROM person INNER JOIN person_festival pf ON person.id=pf.person LEFT JOIN pf_job USING (person,festival) LEFT JOIN job ON pf_job.job=job.id WHERE pf.badge_set=? ORDER BY job.double_sided DESC,person.badgename");
-$sth->execute([$badge_set]);
-
-$badge_list = tempnam(sys_get_temp_dir(), "volcsv");
-$pdf = tempnam(sys_get_temp_dir(), "volpdf");
-
+$badge_list = tempnam(sys_get_temp_dir(), "badge_csv_");
+$pdf = tempnam(sys_get_temp_dir(), "badge_pdf_");
 $badge_file = fopen($badge_list, 'w');
-while ($entry = $sth->fetch(PDO::FETCH_OBJ)) {
-	$row = [$entry->badge_name, NULL, $entry->job, $entry->person_id];
-	if ($entry->double_sided) {
-		$row[1] = $entry->real_name;
+
+if ($volunteer_badge_count) {
+	$sth = db_prepare("SELECT person.name AS real_name, person.badgename AS badge_name, job.double_sided AS double_sided, job.name AS job, person.id AS person_id FROM person INNER JOIN person_festival pf ON person.id=pf.person LEFT JOIN pf_job USING (person,festival) LEFT JOIN job ON pf_job.job=job.id WHERE pf.badge_set=? ORDER BY job.double_sided DESC,person.badgename");
+	$sth->execute([$badge_set]);
+
+	while ($entry = $sth->fetch(PDO::FETCH_OBJ)) {
+		$row = [$entry->badge_name, NULL, $entry->job, $entry->person_id];
+		if ($entry->double_sided) {
+			$row[1] = $entry->real_name;
+		}
+		if (!$entry->job) {
+			$row[2] = "Volunteer";
+		}
+		fputcsv($badge_file, $row);
 	}
-	if (!$entry->job) {
-		$row[2] = "Volunteer";
-	}
-	fputcsv($badge_file, $row);
 }
+
+if ($other_badge_count) {
+	$sth = db_prepare("SELECT id, name, job FROM badge WHERE badge_set=? ORDER BY job,name");
+	$sth->execute([$badge_set]);
+
+	while ($entry = $sth->fetch(PDO::FETCH_OBJ)) {
+		$row = [$entry->name, NULL, $entry->job, 'c_' + $entry->id];
+		fputcsv($badge_file, $row);
+	}
+}
+
 fclose($badge_file);
 
 exec("/usr/bin/env python ../tools/badgegen.py --festival-name=\"{$f->name}\" --festival-logo=../logos/{$f->tag}.png --staff-format=csv $badge_list $pdf");
@@ -56,5 +75,8 @@ unlink($pdf);
 
 $sth = db_prepare("UPDATE person_festival SET badge_printed=1 WHERE badge_set=?");
 $sth->execute([$badge_set]);
-db_commit();
 
+$sth = db_prepare("UPDATE badge SET badge_printed=1 WHERE badge_set=?");
+$sth->execute([$badge_set]);
+
+db_commit();
