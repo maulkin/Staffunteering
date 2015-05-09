@@ -61,6 +61,10 @@ tr.shown td.details-control {
 	font-style: italic;
 }
 
+button.submit {
+	display: block;
+	margin: 2ex 0;
+}
 </style>
 <link rel="stylesheet" href="../style/base.css">
 <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
@@ -80,12 +84,32 @@ Logged in as <?php echo(h($g_user->username)); ?> | <a href="adminlogout.php" ti
 
 <main id="tabs">
 <ul>
+<li><a href="#add"><span id="add-link">Add</span></a></li>
 <li><a href="#incoming"><span id="incoming-link">Incoming</span></a></li>
 <li><a href="#volunteers"><span id="volunteers-link">Volunteers</span></a></li>
 <li><a href="#sessions"><span id="sessions-link">Sessions</span></a></li>
 <li><a href="#reports"><span id="reports-link">Reports</span></a></li>
 <li><a href="#badges"><span id="badges-link">Badges</span></a></li>
 </ul>
+<div id="add">
+<form id="add-volunteer-member-form">
+<label>Membership number<input type="text" id="add-volunteer-member-number"></label>
+<button type="submit" id="add-volunteer-member-submit">Lookup</button>
+<span id="add-volunteer-member-status" style="display:none;"></span>
+</form>
+<form id="add-volunteer-form">
+<label class="required" for="add-volunteer-name">Name</label>
+<input required type="text" id="add-volunteer-name" name="add-volunteer-name" value="" size="50">
+<label for="add-volunteer-badge">Badge Name</label>
+<input type="text" id="add-volunteer-badge" name="add-volunteer-badge" value="" size="50">
+<label for="add-volunteer-email">Email address</label>
+<input type="email" id="add-volunteer-email" name="add-volunteer-email" value="" size="50">
+<label for="add-volunteer-address">Address</label>
+<textarea id="add-volunteer-address" name="add-volunteer-address" rows="4" cols="80"></textarea>
+<button class="submit" type="submit" id="add-volunteer-submit">Add</button>
+<span id="add-volunteer-status" style="display:none;"></span>
+</form>
+</div>
 <div id="incoming">
 <table id="incoming-table" class="volunteer-list stripe">
 <thead><tr><th></th><th>Name</th><th>Member</th><th>Job preferences</th><th>Qualifications</th><th>Notes</th><th></th></tr></thead>
@@ -401,6 +425,52 @@ $("#incoming-table tbody").on('click', 'button.accept-button', function() {
 	$.post("accept-incoming.php", {person:person_id}).done(
 		function(data) {
 			row.remove().draw(false);
+		});
+});
+
+$("#add-volunteer-member-form").on('submit', function(event) {
+	var number = $("#add-volunteer-member-number").val();
+	var status_field = $("#add-volunteer-member-status");
+	event.preventDefault();
+	status_field.text("Looking up details...").show();
+	$.get("member-check.php?number=" + number)
+		.done(function (data) {
+			status_field.text("Done").hide("highlight", null, 1000);
+			$("#add-volunteer-name").val(data.name);
+			if (data.email) {
+				$("#add-volunteer-email").val(data.email);
+			} if (data.address) {
+				$("#add-volunteer-address").val(data.address);
+			}
+		})
+		.fail(function () {
+			status_field.html("<span class='error'>Lookup failed</span>");
+		});
+});
+
+$("#add-volunteer-form").on('submit', function(event) {
+	$("#add-volunteer-status").hide();
+	event.preventDefault();
+	var data = {
+		"name":$("#add-volunteer-name").val(),
+		"badgename":$("#add-volunteer-badge").val(),
+		"email":$("#add-volunteer-email").val(),
+		"address":$("#add-volunteer-address").val(),
+		"membership":$("#add-volunteer-member-number").val()
+	};
+
+	$.post("volunteer-add.php", data)
+		.done(function () {
+			$("#add-volunteer-status").text("Added").show().hide("highlight", null, 3000);
+			$("#add-volunteer-member-form")[0].reset();
+			$("#add-volunteer-form")[0].reset();
+		})
+		.fail(function (req) {
+			if (req.status == 409) {
+				$("#add-volunteer-status").html("<span class='error'>" + req.responseText + "</span>").show();
+			} else {
+				$("#add-volunteer-status").html("<span class='error'>Unknown error</span>").show();
+			}
 		});
 });
 
