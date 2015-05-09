@@ -14,8 +14,8 @@ class Person extends Record {
 
 	public function set_persist()
 	{
-		/* Set cookie to last 6 days. */
-		idcookie_set($this->id, ServerConfig::LOGIN_COOKIE_NAME, ServerConfig::LOGIN_COOKIE_MAC_KEY, 6);
+		/* Set cookie to last 30 days. */
+		idcookie_set($this->id, ServerConfig::LOGIN_COOKIE_NAME, ServerConfig::LOGIN_COOKIE_MAC_KEY, 30);
 	}
 
 	public function set_password($pw)

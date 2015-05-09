@@ -9,8 +9,8 @@ class User extends Record {
 
 	public function set_persist()
 	{
-		/* Set cookie to last 6 days. */
-		idcookie_set($this->id, ServerConfig::ADMIN_COOKIE_NAME, ServerConfig::ADMIN_COOKIE_MAC_KEY, 6);
+		/* Set cookie to last 15 days. */
+		idcookie_set($this->id, ServerConfig::ADMIN_COOKIE_NAME, ServerConfig::ADMIN_COOKIE_MAC_KEY, 15);
 	}
 
 	public static function remove_persist()
