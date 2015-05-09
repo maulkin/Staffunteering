@@ -33,33 +33,38 @@ function camra_get_details($membership_number)
 		curl_setopt ($ch, CURLOPT_SSL_VERIFYHOST, 2);
 	}
 
-    $result = curl_exec ($ch);
-    curl_close ($ch);
+	$result = curl_exec ($ch);
+	curl_close ($ch);
 
 	$raw_data = json_decode($result);
 	if (!$raw_data || !isset($raw_data->MembershipNumber) || ($raw_data->MembershipNumber != $memno)) {
 		return null;
 	}
 
-    $proper_data = [
-    	'name' => join(' ', [$raw_data->Forename, $raw_data->Surname]),
-    	'branch' => $raw_data->BranchName,
-    	'address' => join ("\n", [$raw_data->Address1, $raw_data->Address2, $raw_data->Address3, $raw_data->AddressPostcode])
-    ];
+	$proper_data = [
+		'name' => join(' ', [$raw_data->Forename, $raw_data->Surname]),
+		'branch' => $raw_data->BranchName,
+		'address' => join ("\n", [$raw_data->Address1, $raw_data->Address2, $raw_data->Address3, $raw_data->AddressPostcode])
+	];
 
-    if (($raw_data->ContactByEmail == 'Y') && count($raw_data->Emails)) {
-    	$proper_data['email'] = $raw_data->Emails[0]->emailAddresss;
-    }
-    if (count($raw_data->Telephones)) {
-    	$proper_data['phone'] = $raw_data->Telephones[0]->Telephone;
-    }
+	if (($raw_data->ContactByEmail == 'Y') && count($raw_data->Emails)) {
+		$proper_data['email'] = $raw_data->Emails[0]->emailAddresss;
+	}
+	if (count($raw_data->Telephones)) {
+		$proper_data['phone'] = $raw_data->Telephones[0]->Telephone;
+	}
 
-    return ($proper_data);
+	return ($proper_data);
 }
 
 if (!isset($_GET['number']) || !preg_match('/^\d+$/', $_GET['number'])) {
 	http_response_code(400);
 	exit(0);
 } else {
-	echo json_encode(camra_get_details($_GET['number']));
+	$data = camra_get_details($_GET['number']);
+	if ($data) {
+		echo json_encode($data);
+	} else {
+		http_response_code(404);
+	}
 }
