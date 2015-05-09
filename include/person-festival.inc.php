@@ -55,7 +55,20 @@ class PersonFestival extends Record {
 	public function save()
 	{
 		if ($this->person && $this->festival) {
+			/* Reprint badge on all changes. */
+			$this->dirty['badge_printed'] = 0;
+			$this->data['badge_printed'] = 0;
+
 			db_begin();
+
+			$updates = array();
+			foreach($this->dirty as $field=>$junk) {
+				if (is_array($this->data[$field]))
+					continue;
+
+				$value = $this->data[$field];
+				$updates[] = $field . '=' . db_quote($value);
+			}
 
 			$sth = db_prepare("SELECT * FROM person_festival WHERE person=? AND festival=?");
 			$sth->execute(array($this->person->id, $this->festival->id));
@@ -69,8 +82,12 @@ class PersonFestival extends Record {
 			$this->save_list('flag', $this->data['flags']);
 			$this->save_list('job', $this->data['jobs']);
 
-			$sth = db_prepare("UPDATE person_festival SET jobprefs=?, quals=?, notes=?, badge_printed=0 WHERE person=? AND festival=?");
-			$sth->execute(array($this->data['jobprefs'], $this->data['quals'], $this->data['notes'], $this->person->id, $this->festival->id));
+			if (count($updates)) {
+				$sth = db_prepare("UPDATE person_festival SET " . implode(',', $updates) . " WHERE person=? AND festival=?");
+				$sth->execute(array($this->person->id, $this->festival->id));
+			}
+
+			$this->dirty = array();
 
 			db_commit();
 		}
@@ -135,6 +152,6 @@ class PersonFestival extends Record {
 
 	public function badge_reprint()
 	{
-		$this->dirty['badge_printed'] = true;
+		$this->dirty['badge_printed'] = 0;
 	}
 }
