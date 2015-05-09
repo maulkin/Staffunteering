@@ -75,7 +75,7 @@ td label {
 	color: #ff0000;
 }
 
-span.error {
+span.formerror {
 	font-weight: bold;
 	font-size: small;
 	display: block;
