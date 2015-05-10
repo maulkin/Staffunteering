@@ -29,6 +29,8 @@ $pf = new PersonFestival($p, $f);
 $p_filter = [
 	"id" => $p->id,
 	"name" => $p->name,
+	"badgename" => $p->badgename,
+	"approved_badgename" => $p->approved_badgename,
 	"email" => $p->email,
 	"address" => $p->address
 	];

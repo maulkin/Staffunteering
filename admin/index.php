@@ -221,6 +221,17 @@ if (!festival_data) {
 	});
 }
 
+function render_name(name, type, row)
+{
+	if (row.approved_badgename.length && row.approved_badgename != name) {
+		return name + " <em>(" + row.approved_badgename + ")</em>";
+	} else if (!row.approved_badgename.length && row.badgename.length && row.badgename != name) {
+		return name + " <em>(" + row.badgename + ")</em>";
+	} else {
+		return name;
+	}
+}
+
 var incoming_table = $("#incoming-table").DataTable( {
 	"autoWidth": false,
 	"ajax": {
@@ -229,13 +240,7 @@ var incoming_table = $("#incoming-table").DataTable( {
 	},
 	"columns": [
 		{ "data": null, "className":'details-control', "defaultContent": "", "orderable":false, "searchable":false, "width":"20px" },
-		{ "data": "name", "render": function(data, type, row) {
-			if (row.badgename != data) {
-				return data + " <em>(" + row.badgename + ")</em>";
-			} else {
-				return data;
-			}
-		}},
+		{ "data": "name", "render": render_name },
 		{ "data": "membership", "defaultContent": "-"},
 		{ "data": "jobprefs"},
 		{ "data": "quals"},
@@ -254,13 +259,7 @@ var volunteer_table_options = {
 	"deferLoading":10,
 	"columns": [
 		{ "data": null, "className":'details-control', "defaultContent": "", "orderable":false, "searchable":false, "width":"20px" },
-		{ "data": "name", "render": function(data, type, row) {
-			if (row.badgename != data) {
-				return data + " <em>(" + row.badgename + ")</em>";
-			} else {
-				return data;
-			}
-		}},
+		{ "data": "name", "render": render_name },
 		{ "data": "membership", "defaultContent": "-"},
 		],
 	"order": [[ 1, "asc" ]]
@@ -376,6 +375,23 @@ function format_volunteer_details(data)
 	f += "</select></label><button class='add-job-button'>Add</button>";
 	f += "</div>";
 
+	/* Badge stuff. */
+	f += "<div class='column volunteer-badge'><h2>Badging</h2>";
+	var current_badge_name;
+	var requested_badge_name;
+	if (data.person.badgename.length) {
+		requested_badge_name = data.person.badgename;
+	} else {
+		requested_badge_name = data.person.name;
+	}
+	if (data.person.approved_badgename.length) {
+		current_badge_name = data.person.approved_badgename;
+	}
+	f += "<p>Requested name: <span class='requested-badge-name'>" + requested_badge_name + "</span> <button class='copy-badge-name-button'>Use name</button></p>";
+	f += "<p><button class='badge-real-name-button' data-name='" + data.person.name + "'>Use real name</button></p>";
+	f += "<p><input class='badge-name-input' type='text' value='" + current_badge_name + "'><button class='save-badge-name-button'>Save</button></p>";
+	f += "</div>";
+
 	f += "<div class='internal-details'>person.id: " + data.person.id + "</div>";
 
 	f += "</div>";
@@ -441,6 +457,64 @@ $(".volunteer-list tbody").on('click', 'button.add-job-button', function() {
 				new_li.appendTo(job_list);
 				new_li.slideDown('fast');
 			}
+		});
+});
+
+$(".volunteer-list tbody").on('click', '.badge-real-name-button', function() {
+	var wrapper = $(this).closest('div.volunteer-badge');
+	var name = $(this).attr('data-name');
+	var person_id = $(this).closest('div.volunteer-details').attr('data-person-id');
+	var tr = $(this).closest('tr').prev(); // Child is actually an extra row.
+	var dt = $(this).closest('table').DataTable();
+	var row = dt.row(tr);
+
+	wrapper.find('.badge-name-input').first().val(name);
+
+	$.post("volunteer-set-badge.php", {"person":person_id, "name":name})
+		.done( function() {
+			var d = row.data();
+			d.approved_badgename = name;
+			row.data(d).draw();
+		})
+		.fail( function() {
+		});
+});
+
+$(".volunteer-list tbody").on('click', '.copy-badge-name-button', function() {
+	var wrapper = $(this).closest('div.volunteer-badge');
+	var name = wrapper.find('.requested-badge-name').first().text();
+	var person_id = $(this).closest('div.volunteer-details').attr('data-person-id');
+	var tr = $(this).closest('tr').prev(); // Child is actually an extra row.
+	var dt = $(this).closest('table').DataTable();
+	var row = dt.row(tr);
+
+	wrapper.find('.badge-name-input').first().val(name);
+
+	$.post("volunteer-set-badge.php", {"person":person_id, "name":name})
+		.done( function() {
+			var d = row.data();
+			d.approved_badgename = name;
+			row.data(d).draw();
+		})
+		.fail( function() {
+		});
+});
+
+$(".volunteer-list tbody").on('click', '.save-badge-name-button', function() {
+	var wrapper = $(this).closest('div.volunteer-badge');
+	var name = wrapper.find('.badge-name-input').first().val();
+	var person_id = $(this).closest('div.volunteer-details').attr('data-person-id');
+	var tr = $(this).closest('tr').prev(); // Child is actually an extra row.
+	var dt = $(this).closest('table').DataTable();
+	var row = dt.row(tr);
+
+	$.post("volunteer-set-badge.php", {"person":person_id, "name":name})
+		.done( function() {
+			var d = row.data();
+			d.approved_badgename = name;
+			row.data(d).draw();
+		})
+		.fail( function() {
 		});
 });
 
@@ -542,6 +616,8 @@ $("#tabs").tabs({
 			incoming_table.ajax.reload();
 		} else if (ui.newPanel.is("#volunteers")) {
 			volunteer_table.ajax.reload();
+		} else if (ui.newPanel.is("#badges")) {
+			badge_table.ajax.reload();
 		}
 	}
 });

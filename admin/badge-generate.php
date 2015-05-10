@@ -37,11 +37,17 @@ $pdf = tempnam(sys_get_temp_dir(), "badge_pdf_");
 $badge_file = fopen($badge_list, 'w');
 
 if ($volunteer_badge_count) {
-	$sth = db_prepare("SELECT person.name AS real_name, person.badgename AS badge_name, job.double_sided AS double_sided, job.name AS job, person.id AS person_id FROM person INNER JOIN person_festival pf ON person.id=pf.person LEFT JOIN pf_job USING (person,festival) LEFT JOIN job ON pf_job.job=job.id WHERE pf.badge_set=? ORDER BY job.double_sided DESC,person.badgename");
+	$sth = db_prepare("SELECT person.name AS real_name, person.approved_badgename AS badgename, job.double_sided AS double_sided, job.name AS job, person.id AS person_id FROM person INNER JOIN person_festival pf ON person.id=pf.person LEFT JOIN pf_job USING (person,festival) LEFT JOIN job ON pf_job.job=job.id WHERE pf.badge_set=? ORDER BY job.double_sided DESC,person.badgename");
 	$sth->execute([$badge_set]);
 
 	while ($entry = $sth->fetch(PDO::FETCH_OBJ)) {
-		$row = [$entry->badge_name, NULL, $entry->job, $entry->person_id];
+		if (strlen($entry->badgename)) {
+			$badgename = $entry->badgename;
+		} else {
+			$badgename = $entry->real_name;
+		}
+
+		$row = [$badgename, NULL, $entry->job, $entry->person_id];
 		if ($entry->double_sided) {
 			$row[1] = $entry->real_name;
 		}
