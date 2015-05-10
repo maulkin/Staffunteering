@@ -474,7 +474,7 @@ $(".volunteer-list tbody").on('click', '.badge-real-name-button', function() {
 		.done( function() {
 			var d = row.data();
 			d.approved_badgename = name;
-			row.data(d).draw();
+			row.data(d).draw(false);
 		})
 		.fail( function() {
 		});
@@ -494,7 +494,7 @@ $(".volunteer-list tbody").on('click', '.copy-badge-name-button', function() {
 		.done( function() {
 			var d = row.data();
 			d.approved_badgename = name;
-			row.data(d).draw();
+			row.data(d).draw(false);
 		})
 		.fail( function() {
 		});
@@ -512,7 +512,7 @@ $(".volunteer-list tbody").on('click', '.save-badge-name-button', function() {
 		.done( function() {
 			var d = row.data();
 			d.approved_badgename = name;
-			row.data(d).draw();
+			row.data(d).draw(false);
 		})
 		.fail( function() {
 		});
