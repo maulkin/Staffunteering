@@ -63,7 +63,7 @@ if ($other_badge_count) {
 	$sth->execute([$badge_set]);
 
 	while ($entry = $sth->fetch(PDO::FETCH_OBJ)) {
-		$row = [$entry->name, NULL, $entry->job, 'c_' + $entry->id];
+		$row = [$entry->name, NULL, $entry->job, 'c_' . $entry->id];
 		fputcsv($badge_file, $row);
 	}
 }
