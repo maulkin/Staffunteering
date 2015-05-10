@@ -377,14 +377,14 @@ function format_volunteer_details(data)
 
 	/* Badge stuff. */
 	f += "<div class='column volunteer-badge'><h2>Badging</h2>";
-	var current_badge_name;
+	var current_badge_name = '';
 	var requested_badge_name;
 	if (data.person.badgename.length) {
 		requested_badge_name = data.person.badgename;
 	} else {
 		requested_badge_name = data.person.name;
 	}
-	if (data.person.approved_badgename.length) {
+	if (data.person.approved_badgename && data.person.approved_badgename.length) {
 		current_badge_name = data.person.approved_badgename;
 	}
 	f += "<p>Requested name: <span class='requested-badge-name'>" + requested_badge_name + "</span> <button class='copy-badge-name-button'>Use name</button></p>";
