@@ -223,9 +223,9 @@ if (!festival_data) {
 
 function render_name(name, type, row)
 {
-	if (row.approved_badgename.length && row.approved_badgename != name) {
+	if (row.approved_badgename && row.approved_badgename.length && row.approved_badgename != name) {
 		return name + " <em>(" + row.approved_badgename + ")</em>";
-	} else if (!row.approved_badgename.length && row.badgename.length && row.badgename != name) {
+	} else if ((!row.approved_badgename || !row.approved_badgename.length) && row.badgename.length && row.badgename != name) {
 		return name + " <em>(" + row.badgename + ")</em>";
 	} else {
 		return name;
