@@ -225,7 +225,7 @@ function render_name(name, type, row)
 {
 	if (row.approved_badgename && row.approved_badgename.length && row.approved_badgename != name) {
 		return name + " <em>(" + row.approved_badgename + ")</em>";
-	} else if ((!row.approved_badgename || !row.approved_badgename.length) && row.badgename.length && row.badgename != name) {
+	} else if ((!row.approved_badgename || !row.approved_badgename.length) && row.badgename && row.badgename.length && row.badgename != name) {
 		return name + " <em>(" + row.badgename + ")</em>";
 	} else {
 		return name;
@@ -379,7 +379,7 @@ function format_volunteer_details(data)
 	f += "<div class='column volunteer-badge'><h2>Badging</h2>";
 	var current_badge_name = '';
 	var requested_badge_name;
-	if (data.person.badgename.length) {
+	if (data.person.badgename && data.person.badgename.length) {
 		requested_badge_name = data.person.badgename;
 	} else {
 		requested_badge_name = data.person.name;
