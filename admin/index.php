@@ -93,10 +93,12 @@ Logged in as <?php echo(h($g_user->username)); ?> | <a href="adminlogout.php" ti
 <li><a href="#add"><span id="add-link">Add</span></a></li>
 <li><a href="#incoming"><span id="incoming-link">Incoming</span></a></li>
 <li><a href="#volunteers"><span id="volunteers-link">Volunteers</span></a></li>
+<li><a href="#prev-volunteers" title="People who've volunteered at previous festivals but not the current one"><span id="prev-volunteers-link">Previous Volunteers</span></a></li>
 <li><a href="#sessions"><span id="sessions-link">Sessions</span></a></li>
 <li><a href="#reports"><span id="reports-link">Reports</span></a></li>
 <li><a href="#badges"><span id="badges-link">Badges</span></a></li>
 </ul>
+
 <div id="add">
 <form id="add-volunteer-member-form">
 <label>Membership number<input type="text" id="add-volunteer-member-number"></label>
@@ -116,22 +118,32 @@ Logged in as <?php echo(h($g_user->username)); ?> | <a href="adminlogout.php" ti
 <span id="add-volunteer-status" style="display:none;"></span>
 </form>
 </div>
+
 <div id="incoming">
 <table id="incoming-table" class="volunteer-list stripe">
 <thead><tr><th></th><th>Name</th><th>Member</th><th>Job preferences</th><th>Qualifications</th><th>Notes</th><th></th></tr></thead>
 </table>
 </div>
+
 <div id="volunteers">
 <table id="volunteer-table" class="volunteer-list stripe">
 <thead><tr><th></th><th>Name</th><th>Member</th></tr></thead>
 </table>
 </div>
+
+<div id="prev-volunteers">
+<table id="prev-volunteer-table" class="volunteer-list stripe">
+<thead><tr><th></th><th>Name</th><th>Member</th></tr></thead>
+</table>
+</div>
+
 <div id="sessions">
 <select id="session-selector"><option value="0" selected style="display:none;">Select session...</option></select>
 <table id="session-volunteer-table" class="volunteer-list stripe">
 <thead><tr><th></th><th>Name</th><th>Member</th></tr></thead>
 </table>
 </div>
+
 <div id="reports">
 <select id="report-selector"><option value="0" selected style="display:none;">Select report...</option></select>
 <a id="download-report-link" style="display:none;" href="">Download report...</a>
@@ -139,6 +151,7 @@ Logged in as <?php echo(h($g_user->username)); ?> | <a href="adminlogout.php" ti
 <thead><tr><th></th><th>Name</th><th>Member</th></tr></thead>
 </table>
 </div>
+
 <div id="badges">
 <p><a href="badge-generate.php" class="pdf">Get pending badges</a></p>
 <h2>Custom badges</h2>
@@ -268,6 +281,9 @@ var volunteer_table_options = {
 var volunteer_table = $("#volunteer-table").DataTable(volunteer_table_options);
 volunteer_table.ajax.url("volunteers.php").load();
 
+var prev_volunteer_table = $("#prev-volunteer-table").DataTable(volunteer_table_options);
+prev_volunteer_table.ajax.url("non-volunteers.php").load();
+
 var session_volunteer_table = $("#session-volunteer-table").DataTable(volunteer_table_options);
 $("#session-selector").change(function() {
 	var session_id = $(this).val();
@@ -330,24 +346,29 @@ function format_volunteer_details(data)
 
 	/* Information relating to this festival. */
 	f += "<div class='column'><h2>Festival information</h2>";
-	if (data.flags.length) {
-		f += "<div><h3>Requests</h3><ul>";
-		$.each(data.flags, function(index, flag_id) {
-			if (flag_id in festival_flags) {
-				f += "<li data-flag-id='" + flag_id + "'>" + festival_flags[flag_id];
-			}
-		});
-		f += "</div>";
-	}
+	if (data.volunteered) {
+		if (data.flags.length) {
+			f += "<div><h3>Requests</h3><ul>";
+			$.each(data.flags, function(index, flag_id) {
+				if (flag_id in festival_flags) {
+					f += "<li data-flag-id='" + flag_id + "'>" + festival_flags[flag_id];
+				}
+			});
+			f += "</div>";
+		}
 
-	if (data.sessions.length) {
-		f += "<div><h3>Sessions</h3><ul>";
-		$.each(data.sessions, function(index, session_id) {
-			if (session_id in festival_sessions) {
-				f += "<li data-session-id='" + session_id + "'>" + festival_sessions[session_id].name;
-			}
-		});
-		f += "</div>";
+		if (data.sessions.length) {
+			f += "<div><h3>Sessions</h3><ul>";
+			$.each(data.sessions, function(index, session_id) {
+				if (session_id in festival_sessions) {
+					f += "<li data-session-id='" + session_id + "'>" + festival_sessions[session_id].name;
+				}
+			});
+			f += "</div>";
+		}
+	} else {
+		f += "<div class='add-volunteer-festival-wrapper'>This person has not yet volunteered for this festival";
+		f += "<button class='add-volunteer-festival-button'>Add</button></div>";
 	}
 	f += "</div>";
 
@@ -393,7 +414,6 @@ function format_volunteer_details(data)
 	f += "</div>";
 
 	f += "<div class='internal-details'>person.id: " + data.person.id + "</div>";
-
 	f += "</div>";
 
 	return $.parseHTML(f);
@@ -438,6 +458,7 @@ $(".volunteer-list tbody").on('click', 'button.add-job-button', function() {
 	var wrapper = $(this).closest('div.job-list');
 	var job_id = wrapper.find('select').first().val();
 	var person_id = $(this).closest('div.volunteer-details').attr('data-person-id');
+	var add_festival_wrapper = $(this).closest('div.volunteer-details').find('.add-volunteer-festival-wrapper').first();
 
 	if (!job_id)
 		return;
@@ -457,10 +478,25 @@ $(".volunteer-list tbody").on('click', 'button.add-job-button', function() {
 				new_li.appendTo(job_list);
 				new_li.slideDown('fast');
 			}
+			if (add_festival_wrapper) {
+				add_festival_wrapper.hide("fade", null, 1000);
+			}
 		});
 });
 
-$(".volunteer-list tbody").on('click', '.badge-real-name-button', function() {
+$(".volunteer-list tbody").on('click', 'button.add-volunteer-festival-button', function() {
+	var person_id = $(this).closest('div.volunteer-details').attr('data-person-id');
+	var wrapper = $(this).closest('div.add-volunteer-festival-wrapper');
+
+	console.log("Here");
+
+	$.post("volunteer-festival-add.php", {"person":person_id}).done(
+		function(data) {
+			wrapper.hide("highlight", null, 1000);
+		});
+});
+
+$(".volunteer-list tbody").on('click', 'button.badge-real-name-button', function() {
 	var wrapper = $(this).closest('div.volunteer-badge');
 	var name = $(this).attr('data-name');
 	var person_id = $(this).closest('div.volunteer-details').attr('data-person-id');
@@ -616,6 +652,8 @@ $("#tabs").tabs({
 			incoming_table.ajax.reload();
 		} else if (ui.newPanel.is("#volunteers")) {
 			volunteer_table.ajax.reload();
+		} else if (ui.newPanel.is("#prev-volunteers")) {
+			prev_volunteer_table.ajax.reload();
 		} else if (ui.newPanel.is("#badges")) {
 			badge_table.ajax.reload();
 		}
