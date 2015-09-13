@@ -39,5 +39,6 @@ echo json_encode([
 	"person" => $p_filter,
 	"sessions" => $pf->sessions,
 	"flags" => $pf->flags,
-	"jobs" => $pf->jobs
+	"jobs" => $pf->jobs,
+	"volunteered" => $pf->volunteered
 	]);

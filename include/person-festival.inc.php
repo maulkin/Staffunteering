@@ -29,6 +29,8 @@ class PersonFestival extends Record {
 				$sth = db_prepare("SELECT job FROM pf_job WHERE person=? AND festival=?");
 				$sth->execute(array($person->id, $festival->id));
 				$this->data['jobs'] = $sth->fetchAll(PDO::FETCH_COLUMN, 0);
+
+				$this->data['volunteered'] = true;
 			}
 		}
 
@@ -38,6 +40,7 @@ class PersonFestival extends Record {
 				'flags' => [],
 				'sessions' => [],
 				'jobs' => [],
+				'volunteered' => false
 			];
 		}
 	}
