@@ -42,6 +42,7 @@ switch ($_POST['op'])
 		break;
 }
 
+$pf->state = 'approved';
 $pf->save();
 
 echo json_encode(true);
