@@ -3,7 +3,10 @@ import argparse
 import json
 import csv
 
-import Image
+try:
+	import Image
+except:
+	from PIL import Image
 import reportlab
 
 from reportlab.pdfgen.canvas import Canvas
