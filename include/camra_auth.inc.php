@@ -48,6 +48,12 @@ function camra_authenticate ($membership_number, $password, &$error_code, &$debu
 	}
 	curl_close ($ch);
 
+	if (preg_match("/(<div.*<\/div>)(.*)/s", $result_data, $matches))
+	{
+		trigger_error("Stripping error off front of auth response: " . $matches[1]);
+		$result_data = $matches[2];
+	}
+
 	$data = json_decode ($result_data);
 
 	// It appears that the service is working OK, so failures beyond here are real authentication errors.
