@@ -9,7 +9,7 @@ function mailer_send($to, $subject, $body)
 function mailer_send_multiple($to_list, $subject, $body)
 {
 	if (count($to_list) == 0)
-		return;
+		return true;
 
 	$mail = new PHPMailer();
 
