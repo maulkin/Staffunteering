@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block content %}
+{% if message %}
+<p>{{ message }}</p>
+{% endif %}
+{% if rawmessage %}
+{{ rawmessage|raw }}
+{% endif %}
+{% endblock %}
