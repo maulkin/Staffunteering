@@ -29,6 +29,7 @@ $(function() {
 <form method="POST" action="" accept-charset="utf-8">
 {{ forms.input('Email address', 'login_email', '', 'email', 60) }}
 {{ forms.input('Password', 'login_password', '', 'password') }}
+<span class="password-tip"><a href="nonmember-password.php" title="Forgotten password?" class="popup">Forgotten your password?</a></span>
 {{ forms.submit('Login') }}
 </form>
 
