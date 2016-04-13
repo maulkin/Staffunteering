@@ -40,6 +40,7 @@ class Person extends Record {
 
 	public static function from_member($membership_number, $create=false)
 	{
+		$membership_number = ltrim($membership_number, '0');
 		db_begin();
 		$sth = db_prepare("SELECT id FROM person WHERE membership=?");
 		$sth->execute(array($membership_number));
