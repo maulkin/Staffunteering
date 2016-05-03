@@ -39,6 +39,12 @@ switch ($_GET['report']) {
 		$fields = ["person_id", "name", "job"];
 		break;
 
+	case 'email_list':
+		$sth = db_prepare("SELECT p.id AS person_id, p.name AS name, p.email AS email FROM person p INNER JOIN person_festival ON p.id=person_festival.person WHERE person_festival.festival=? AND person_festival.state='approved'");
+		$sth->execute([$f->id]);
+		$fields = ["person_id", "name", "email"];
+		break;
+
 	default:
 		http_response_code(404);
 		exit(0);
