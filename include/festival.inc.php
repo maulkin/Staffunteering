@@ -18,7 +18,7 @@ class Festival extends Record {
 				'open' => [],
 				'takedown' => [],
 				];
-			$sth = db_prepare("SELECT * FROM session WHERE festival=?");
+			$sth = db_prepare("SELECT * FROM session WHERE festival=? ORDER BY start");
 			$sth->execute(array($id));
 			while ($session = $sth->fetch(PDO::FETCH_OBJ)) {
 				$day = strftime('%Y-%m-%d', strtotime($session->start));
