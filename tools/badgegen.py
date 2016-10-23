@@ -15,6 +15,7 @@ from reportlab.lib.pagesizes import A4
 from reportlab.platypus import Paragraph
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.utils import ImageReader
+from reportlab.graphics.barcode import code128
 
 # Nasty hack: see
 # http://stackoverflow.com/questions/2227493/reportlab-and-python-imaging-library-images-from-memory-issue
@@ -144,6 +145,9 @@ class BadgeGen():
         if data['id']:
             self.canvas.setFont("Courier", 8)
             self.canvas.drawRightString(left + width - 1*mm, bottom+3*mm, data['id'])
+            # Barcode
+            code = code128.Code128(data['id'])
+            code.drawOn(self.canvas, left - 3*mm, bottom+2*mm)
 
         self.index = index + 1
 
