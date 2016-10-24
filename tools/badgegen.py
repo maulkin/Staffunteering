@@ -139,8 +139,12 @@ class BadgeGen():
 
         # Add the job title, centred, 3mm in from the bottom.
         if data['job']:
-            self.canvas.setFont("Times-Roman", 16)
-            self.canvas.drawCentredString(left + width/2, bottom+3*mm, data['job'])
+            fontsize = 16
+            jobname = data['job']
+            while (self.canvas.stringWidth(jobname, "Times-Roman", fontsize) > (width - 40*mm)):
+                fontsize -= 1
+            self.canvas.setFont("Times-Roman", fontsize)
+            self.canvas.drawCentredString(left + width/2, bottom+3*mm, jobname)
 
         if data['id']:
             self.canvas.setFont("Courier", 8)
