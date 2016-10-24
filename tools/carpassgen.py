@@ -9,33 +9,31 @@ except:
 	from PIL import Image
 import reportlab
 
+from reportlab.lib import colors
 from reportlab.pdfgen.canvas import Canvas
 from reportlab.lib.units import mm
-from reportlab.lib.pagesizes import A4
-from reportlab.platypus import Paragraph
+from reportlab.lib.pagesizes import A4, landscape
+from reportlab.platypus import Paragraph, Table, TableStyle
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.utils import ImageReader
-from reportlab.graphics.barcode import code128
 
 # Nasty hack: see
 # http://stackoverflow.com/questions/2227493/reportlab-and-python-imaging-library-images-from-memory-issue
 reportlab.lib.utils.Image= Image
 
 class BadgeGen():
-    rowcount = 5
-    colcount = 2
 
     def __init__(self, festival, output):
-        self.canvas = Canvas(output, pagesize=A4)
+        self.canvas = Canvas(output, pagesize=landscape(A4))
         self.canvas.setLineWidth(0.25)
 
         self.pagemargin = 20*mm
 
-        self.rowheight = (A4[1] - self.pagemargin*2.0)/BadgeGen.rowcount
-        self.colwidth = (A4[0] - self.pagemargin*2.0)/BadgeGen.colcount
+        self.rowheight = (A4[0] - self.pagemargin*2.0)
+        self.colwidth = (A4[1] - self.pagemargin*2.0)
 
         self.index = 0
-        self.bps = BadgeGen.rowcount * BadgeGen.colcount
+        self.bps = 1
         self.colour = None
 
         self.festival = festival
@@ -47,18 +45,18 @@ class BadgeGen():
 
             if w > h:
                 # Wide image.
-                self.logowidth = 20*mm
-                self.logoheight = h*20*mm/w
+                self.logowidth = 60*mm
+                self.logoheight = h*60*mm/w
             else:
                 # Tall image.
-                self.logoheight = 20*mm
-                self.logowidth  = w*20*mm/h
+                self.logoheight = 60*mm
+                self.logowidth  = w*60*mm/h
         else:
             self.logoheight = self.logowidth = 0
 
         # Size the festival name to fit
-        fontsize = 18
-        availableWidth = self.colwidth - self.logowidth - 4*mm
+        fontsize = 36
+        availableWidth = self.colwidth - self.logowidth - 12*mm
         while (self.canvas.stringWidth(self.festival["name"], "Times-Roman", fontsize) > availableWidth):
             fontsize -= 1
         self.festname_fontsize = fontsize
@@ -75,17 +73,6 @@ class BadgeGen():
             self.festname_y = self.rowheight - 3*mm - fontsize/2
 
     def _setup_page(self):
-        # Draw cutting lines around edge of page.
-        self.canvas.setLineWidth(0.25)
-        for col in range(0, self.colcount + 1):
-            x = self.pagemargin + col * self.colwidth
-            self.canvas.line (x, 0, x, self.pagemargin * 0.9)
-            self.canvas.line (x, A4[1], x, A4[1] - self.pagemargin * 0.9)
-
-        for row in range(0, self.rowcount + 1):
-            y = self.pagemargin + row * self.rowheight
-            self.canvas.line (0, y, self.pagemargin * 0.9, y)
-            self.canvas.line (A4[0], y, A4[0] - self.pagemargin * 0.9, y)
 
         # Output the colour if needed.
         if self.colour and ((self.index % self.bps) == 0):
@@ -94,11 +81,6 @@ class BadgeGen():
 
 
     def Render(self, data, colour=None):
-        if data['altname']:
-            # Double sided badge - check we're in the right place.
-            while self.index % self.colcount != 0:
-                self.index += 1
-
         if self.index == 0:
             self._setup_page()
         elif (self.colour != colour) or (self.index % self.bps == 0):
@@ -111,8 +93,8 @@ class BadgeGen():
         index = self.index % self.bps
 
         # Work out the co-ordinates for this index
-        left = (index % BadgeGen.colcount) * self.colwidth + self.pagemargin
-        bottom = (BadgeGen.rowcount - 1 - ((index // BadgeGen.colcount) % BadgeGen.rowcount)) * self.rowheight + self.pagemargin
+        left = (index % 1) * self.colwidth + self.pagemargin
+        bottom = (1 - 1 - ((index // 1) % 1)) * self.rowheight + self.pagemargin
         width = self.colwidth
         height = self.rowheight
 
@@ -129,47 +111,48 @@ class BadgeGen():
         self.canvas.setFont("Times-Roman", self.festname_fontsize)
         self.canvas.drawCentredString(self.festname_x + left, self.festname_y + bottom, self.festival['name'])
 
-        # Add the volunteer name, just below the middle of the badge.
-        fontsize = 22
-        volname = data['name']
-        while (self.canvas.stringWidth(volname, "Times-Bold", fontsize) > (width - 4*mm)):
+        # Add the registration, just below the middle of the badge.
+        fontsize = 96
+        reg = data['registration']
+        while (self.canvas.stringWidth(reg, "Times-Bold", fontsize) > (width - 4*mm)):
             fontsize -= 1
         self.canvas.setFont("Times-Bold", fontsize)
-        self.canvas.drawCentredString(left + width/2, (bottom + height/2)-(fontsize/2)-2*mm, volname)
+        self.canvas.drawCentredString(left + width/2, (bottom + height/2)-(fontsize/2)-2*mm, reg)
 
-        # Add the job title, centred, 3mm in from the bottom.
-        if data['job']:
-            fontsize = 16
-            jobname = data['job']
-            while (self.canvas.stringWidth(jobname, "Times-Roman", fontsize) > (width - 40*mm)):
-                fontsize -= 1
-            self.canvas.setFont("Times-Roman", fontsize)
-            self.canvas.drawCentredString(left + width/2, bottom+3*mm, jobname)
+        fontsize = 32
+        volname = data['name']
+        while (self.canvas.stringWidth(reg, "Times-Bold", fontsize) > (width - 4*mm)):
+            fontsize -= 1
+        self.canvas.setFont("Times-Bold", fontsize)
+        self.canvas.drawCentredString(left + width/2, (bottom + height/2 - 96)-(fontsize/2)-2*mm, volname)
 
-        if data['id']:
-            self.canvas.setFont("Courier", 8)
-            self.canvas.drawRightString(left + width - 1*mm, bottom+3*mm, data['id'])
-            # Barcode
-            code = code128.Code128(data['id'])
-            code.drawOn(self.canvas, left - 3*mm, bottom+2*mm)
 
+        # Add the phone, centred, 3mm in from the bottom.
+        self.canvas.setFont("Times-Roman", 16)
+        self.canvas.drawCentredString(left + width/2, bottom+3*mm, data['phone'])
+
+        dayslist = list(data['days'])
+        dayslist = ["Y" if (x == "1") else "" for x in dayslist]
+        tabledata = [['F', 'S', 'S', 'M', 'T', 'W', 'T', 'F', 'S', 'S', 'M'],dayslist]
+        # Draw the table for the days on site
+        t=Table(tabledata,5*mm, 5*mm)
+	t.setStyle(TableStyle([ ('FONT',(0,0),(-1,-1),'Courier',8),
+				('ALIGN',(0,0),(-1,-1),'CENTER'),
+                	        ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+				('INNERGRID', (0,0), (-1,-1), 0.25, colors.black),
+                	        ('BOX', (0,0), (-1,-1), 0.25, colors.black),
+                	        ]))
+	w,h = t.wrap(5*mm,5*mm)
+	t.drawOn(self.canvas,left + width - w, bottom+2*mm)
+
+
+        # Increment the sheet
         self.index = index + 1
 
-        if data['altname']:
-            # Call ourselves to render the alternative badge on the other half.
-            data['name'] = data['altname']
-            data['altname'] = None
-            self.Render (data, colour)
-
     def Save(self):
-        # Fill the rest of the sheet with useful blanks.
-        blank = {'name':'', 'job':'Volunteer', 'altname':None, 'id':None}
-        while self.index % self.bps:
-            self.Render (blank, self.colour)
-
         self.canvas.save()
 
-parser = argparse.ArgumentParser(description='Generate badges', fromfile_prefix_chars='@')
+parser = argparse.ArgumentParser(description='Generate car passes', fromfile_prefix_chars='@')
 
 festgroup = parser.add_argument_group ('Festival', 'Festival details')
 festgroup.add_argument ('--festival-name', help='Festival name', required=True)
@@ -184,7 +167,7 @@ args = parser.parse_args()
 stafflist = None
 
 if args.staff_format == 'csv':
-    stafflist = csv.DictReader(args.staff, fieldnames=['name','altname','job','id'])
+    stafflist = csv.DictReader(args.staff, fieldnames=['registration','name','phone','days'])
 elif args.staff_format == 'json':
     stafflist = json.load(args.staff)
 
@@ -193,8 +176,6 @@ if stafflist:
     b = BadgeGen(f, args.output)
 
     for badge in stafflist:
-        if not 'altname' in badge:
-            badge['altname'] = None
         b.Render(badge)
 
     b.Save()
