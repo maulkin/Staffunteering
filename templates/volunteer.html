@@ -49,6 +49,9 @@ $(function() {
 <div id="sessions">
 <p>Please indicate the sessions you can work. If you can only work part of a session that's OK too - for example, if you can't be there at the start or need to leave early.</p>
 <p>For your own safety, please wear stout footwear - no open toed sandals or flip flops. For set up and take down please bring safety footwear if you have it - if you don't have it, we can provide it.</p>
+{% if festival.session_notes %}
+<p><strong>{{ festival.session_notes }}</strong></p>
+{% endif %}
 {% for sessiongroup,days in festival.sessions %}
 <fieldset>
 <legend>{% if sessiongroup in sessiongrouptitles|keys %}{{ sessiongrouptitles[sessiongroup]}}{% else %} {{ sessiongroup }}{% endif %}</legend>
