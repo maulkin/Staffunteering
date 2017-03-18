@@ -150,7 +150,7 @@ class BadgeGen():
             self.canvas.setFont("Courier", 8)
             self.canvas.drawRightString(left + width - 1*mm, bottom+3*mm, data['id'])
             # Barcode
-            code = I2of5(data['id'],barWidth = mm*0.4,checksum=0)
+            code = I2of5("%04d" % int(data['id']),barWidth = mm*0.4,checksum=0)
             self.canvas.rotate(90)
             code.drawOn(self.canvas, left - 3*mm, bottom+2*mm)
             code.drawOn(self.canvas, bottom - 3*mm, 0-(left+10*mm))
